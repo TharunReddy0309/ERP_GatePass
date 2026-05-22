@@ -6,14 +6,6 @@ Developed by: K. Raghuveer and B. Tharun Reddy
 
 ---
 
-## Project Status
-
-Current Phase: Active Development (Creating APIs & Backend Workflow)
-
-This project is being developed as a secure and scalable digital solution for hostel gatepass management with QR-based verification and role-based access control.
-
----
-
 ## Overview
 
 The Hostel Gatepass Management System automates and streamlines the process of granting, approving, tracking, and auditing student movement in and out of hostel premises.
