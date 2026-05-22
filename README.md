@@ -162,23 +162,6 @@ Stores student blocking records including:
 Used to manage disciplinary restrictions and defaulter limits.
 ---
 
-## Tech Stack
-
-### Frontend
-- React.js
-- Tailwind CSS
-
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- PostgreSQL / MySQL
-
-### Authentication
-- JWT Authentication
-
----
 
 ## UI / Figma Designs
 
