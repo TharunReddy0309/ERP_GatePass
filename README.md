@@ -101,16 +101,65 @@ Chief Warden can configure:
 - Easy-to-use interface for security staff
 
 ---
-
 ## Database Entities
 
-- USERS
-- STUDENTS
-- HOSTEL_BLOCK
-- PASSES
-- PASS_ACTIONS
-- BLOCKED
+### USERS
+Stores all system actors including:
+- Students
+- Parents
+- Caretakers
+- Wardens
+- Chief Wardens
+- Security Personnel
 
+Contains authentication and role information.
+
+### STUDENTS
+Extends the USERS entity and stores:
+- Roll Number
+- Hostel Block Details
+- Parent Information
+- Defaulter Attempts
+
+Each student is linked to a hostel block.
+
+### HOSTEL_BLOCK
+Stores hostel block information along with assigned authorities such as:
+- Caretaker
+- Warden
+
+Used for managing block-wise student access and approvals.
+
+### PASSES
+Central table that stores gatepass information including:
+- Pass Type (Day Pass / Home Pass)
+- Destination
+- Purpose
+- Transport Mode
+- Pass Status
+- Expected Return Time
+- Actual Return Time
+- QR Code Details
+
+### PASS_ACTIONS
+Maintains audit logs for every action performed on a pass such as:
+- Submission
+- Approval
+- Rejection
+- Withdrawal
+- Outscan
+- Inscan
+
+Stores actor ID, action type, timestamp, and remarks.
+
+### BLOCKED
+Stores student blocking records including:
+- Blocking Reason
+- Blocking Role
+- Blocked Timestamp
+- Unblocked Timestamp
+
+Used to manage disciplinary restrictions and defaulter limits.
 ---
 
 ## Tech Stack
