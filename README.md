@@ -158,7 +158,6 @@ Stores student blocking records including:
 - Blocking Role
 - Blocked Timestamp
 - Unblocked Timestamp
-
 Used to manage disciplinary restrictions and defaulter limits.
 ---
 
@@ -168,9 +167,3 @@ Used to manage disciplinary restrictions and defaulter limits.
 Figma Design Link:
 https://www.figma.com/design/qaRD994mBFCMEE7lZrisFc/Gatepass-UI
 
----
-
-## Contributors
-
-- K. Raghuveer
-- B. Tharun Reddy
