@@ -71,13 +71,13 @@ export class PassesController {
   }
 
   @Put("Checkin/:id")
-  @Roles(Role.STUDENT)
+  @Roles(Role.SECURITY)
   async checkin(@Param('id') id: string, @Body() updatePass: UpdatePassDto) {
     return await this.passesService.checkin(id, updatePass);
   }
 
   @Put("Checkout/:id")
-  @Roles(Role.STUDENT)
+  @Roles(Role.SECURITY)
   async checkout(@Param('id') id: string, @Body() updatePass: UpdatePassDto) {
     return await this.passesService.checkout(id, updatePass);
   }
