@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreatePassDto } from './dto/create-pass.dto';
 import { PassStatus,UpdatePassDto } from './dto/update-pass.dto';
 import { PassesRepository } from './passes.repository';
+import { BlockedRepository } from 'src/blocked/blocked.repository';
 
 @Injectable()
 export class PassesService {
 
     constructor(
-        private readonly passesRepository:PassesRepository
+      private readonly passesRepository:PassesRepository,
+      private readonly blockedRepository: BlockedRepository
     ){}
 
     async getAllPasses():Promise<any>{
@@ -30,8 +32,14 @@ export class PassesService {
         return await this.passesRepository.getByHostelStatus(id,status);
     }
 
-    async createPass(CreatePass:CreatePassDto):Promise<any>{
-        return await this.passesRepository.createPass(CreatePass);
+    async createPass(CreatePass:CreatePassDto,rollNo:string):Promise<any>{
+        if(await this.blockedRepository.IsBlocked(rollNo)){
+          throw new Error("Student is currently blocked from raising passes");
+        }
+        if(await this.passesRepository.IsPassActive(rollNo)){
+          throw new Error("Pass Already active for this student");
+        }
+        return await this.passesRepository.createPass(CreatePass,rollNo);
     }
 
     async cancelPass(id:string,updatePass:UpdatePassDto):Promise<any>{
@@ -47,6 +55,7 @@ export class PassesService {
             throw new Error("Only pending pass can be cancelled");
         }
         return await this.passesRepository.cancelPass(id);
+
     }
 
     async approveParent(id:string,updatePass:UpdatePassDto):Promise<any>{
@@ -62,6 +71,7 @@ export class PassesService {
             throw new Error("Only pending pass can be approved");
         }
         return await this.passesRepository.approveParent(id);
+
     }
 
     async approveCaretaker(id:string,updatePass:UpdatePassDto):Promise<any>{
@@ -77,6 +87,7 @@ export class PassesService {
             throw new Error("Parent approval required");
         }
         return await this.passesRepository.approveCaretaker(id);
+
     }
 
     async checkout(id:string,updatePass:UpdatePassDto):Promise<any>{
@@ -92,6 +103,7 @@ export class PassesService {
             throw new Error("Pass not approved");
         }
         return await this.passesRepository.checkout(id);
+
     }
  
     async checkin(id:string,updatePass:UpdatePassDto):Promise<any>{
@@ -107,6 +119,7 @@ export class PassesService {
             throw new Error("Student not checked out");
         }
         return await this.passesRepository.checkin(id);
+
     }
 
 }

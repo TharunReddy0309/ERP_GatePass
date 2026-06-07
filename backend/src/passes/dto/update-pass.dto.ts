@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePassDto } from './create-pass.dto';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 
 export enum PassStatus {
   PENDING = "PENDING",
@@ -14,4 +14,8 @@ export enum PassStatus {
 export class UpdatePassDto extends PartialType(CreatePassDto) {
     @IsEnum(PassStatus)
     Status!: PassStatus;
+
+    @IsString()
+    Remarks!: string;
+    
 }

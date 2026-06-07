@@ -25,7 +25,6 @@ interface pass{
 @Injectable()
 export class PassesRepository {
 
-    pass:pass[]=[];
 
     private filePath=path.join(
         process.cwd(),
@@ -37,6 +36,9 @@ export class PassesRepository {
 
     async readPasses():Promise<pass[]>{
         const data=await fs.readFile(this.filePath,'utf-8');
+        if(!data.trim()){
+            return [];
+        }
         return JSON.parse(data);
     }
 
@@ -61,6 +63,15 @@ export class PassesRepository {
         );
     }
 
+    async IsPassActive(rollNo:string): Promise<boolean> {
+
+        const passes=await this.readPasses();   
+        return !!passes.find(
+            p => p.RollNo===rollNo &&
+            (p.Status===PassStatus.PENDING || p.Status===PassStatus.Parentapproved || p.Status===PassStatus.CareTakerapproved)
+        )
+        
+    }
     async getByHostel(id:string){
 
         const passes=await this.readPasses();
@@ -167,13 +178,14 @@ export class PassesRepository {
         return found;
     }
 
-    async createPass(CreatePass:CreatePassDto):Promise<pass>{
+    async createPass(CreatePass:CreatePassDto,rollNo:string):Promise<pass>{
 
         const passes=await this.readPasses();
         const y=uuidv4().slice(0,8);
+
         const newpass:pass={
             passId:"P-id"+y,
-            RollNo:"S20240010032",
+            RollNo:rollNo,
             passtype:CreatePass.passtype,
             HostelId:"BH-1",
             RaisedAt:new Date(),
@@ -181,7 +193,7 @@ export class PassesRepository {
             Purpose:CreatePass.purpose,
             ModeofTransport:CreatePass.modeOfTransport,
             QRCODE:"QR-"+y,
-            Status:PassStatus.PENDING,
+            Status: CreatePass.passtype==="DAY_PASS" ? PassStatus.CareTakerapproved : PassStatus.PENDING,
             Expected_Date:CreatePass.expectedDate,
             Expected_Time:CreatePass.expectedTime,
             Actual_Return_Date:null,

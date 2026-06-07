@@ -35,3 +35,12 @@ export class CreatePassDto {
 
 
 }
+// {
+//    "passtype": "HOME_PASS",
+//    "destination": "Hyderabad",
+//    "purpose": "Festival Vacation",
+//    "modeOfTransport": "Bus",
+//    "Status": "CHECKEDIN",
+//    "expectedDate": "2026-06-15",
+//    "expectedTime": "18:30"
+// }

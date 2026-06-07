@@ -15,6 +15,7 @@ import { Roles } from 'src/auth/roles.decorator';
   // JwtAuthGuard,
   RolesGuard
 )
+
 export class PassesController {
   constructor(private readonly passesService: PassesService) {}
   @Get("getAllPasses")
@@ -48,8 +49,8 @@ export class PassesController {
 
   @Post("createPass")
   @Roles(Role.STUDENT)
-  async createPass(@Body() createPass: CreatePassDto) :Promise<any> {
-    return await this.passesService.createPass(createPass);
+  async createPass(@Body() createPass: CreatePassDto,@Req() req: any) :Promise<any> {
+    return await this.passesService.createPass(createPass,req.user.rollNo);
   }
 
   @Put("cancelPass/:id")
