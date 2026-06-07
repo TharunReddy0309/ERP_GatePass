@@ -5,5 +5,6 @@ import {BlockedRepository} from "./blocked.repository";
 @Module({
   controllers: [BlockedController],
   providers: [BlockedService, BlockedRepository],
+  exports:[BlockedRepository]
 })
 export class BlockedModule {}
