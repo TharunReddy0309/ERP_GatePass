@@ -23,44 +23,19 @@ export class PassActionsRepository {
     );
 
     async readActions():Promise<passAction[]>{
-
         try{
-
-            const data=
-            await fs.readFile(
-
-                this.filePath,
-
-                'utf-8'
-
-            );
-
+            const data=await fs.readFile(this.filePath,'utf-8');
             if(!data.trim()){
                 return [];
             }
-
-            return JSON.parse(
-                data
-            );
-
+            return JSON.parse(data);
         }
-
         catch{
-
-            await fs.writeFile(
-
-                this.filePath,
-
-                "[]"
-
-            );
-
+            await fs.writeFile(this.filePath,"[]");
             return [];
-
         }
-
     }
-    
+
     async writeActions(actions:passAction[]){
         await fs.writeFile(this.filePath,JSON.stringify(actions,null,2));
     }
