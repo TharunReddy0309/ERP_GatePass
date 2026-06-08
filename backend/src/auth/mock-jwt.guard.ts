@@ -19,14 +19,11 @@ implements CanActivate {
 
    req.user = {
 
-      userId: 1,
-
-      role: "STUDENT",
+      role: "CHIEF_WARDEN",
 
       email: "test@gmail.com",
 
-      rollNo: "S20240010032"
-   };
+    };
 
    return true;
  }

@@ -47,6 +47,12 @@ export class PassesController {
     return await this.passesService.getByHostelStatus(id, status);
   }
 
+  @Get("getPassActions")
+  @Roles(Role.CHIEF_WARDEN,Role.WARDEN)
+  async getPassActions() {
+    return await this.passesService.getPassActions();
+  }
+
   @Post("createPass")
   @Roles(Role.STUDENT)
   async createPass(@Body() createPass: CreatePassDto,@Req() req: any) :Promise<any> {
