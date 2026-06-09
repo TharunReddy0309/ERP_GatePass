@@ -19,7 +19,6 @@ export class BlockedRepository {
         process.cwd(),
         'src',
         'blocked',
-        'data',
         'blocked.json'
     );
     async readBlocked():Promise<blocked[]>{

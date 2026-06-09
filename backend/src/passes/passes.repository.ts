@@ -29,7 +29,6 @@ export class PassesRepository {
     private filePath=path.join(
         process.cwd(),
         'src',
-        'passes',
         'data',
         'passes.json'
     );

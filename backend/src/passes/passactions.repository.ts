@@ -18,7 +18,6 @@ export class PassActionsRepository {
         process.cwd(),
         'src',
         'passes',
-        'data',
         'pass-actions.json'
     );
 
@@ -44,7 +43,7 @@ export class PassActionsRepository {
         const actions=await this.readActions();
 
         const newAction:passAction={
-            Action_id:"ACT-"+uuidv4(),
+            Action_id:"ACT-"+uuidv4().slice(0,8),
             Pass_id:passId,
             Roll_NO:rollNo,
             Action_Type:action,
