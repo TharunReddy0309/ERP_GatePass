@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';   
 import { CreateBlockedDto } from './dto/create-blocked.dto';
-// import { v4 as uuidv4 } from 'uuid';
 
 export interface blocked{
     Roll_NO:string;
@@ -17,8 +16,7 @@ export class BlockedRepository {
 
     private filePath=path.join(
         process.cwd(),
-        'src',
-        'blocked',
+        'database',
         'blocked.json'
     );
     async readBlocked():Promise<blocked[]>{
@@ -70,15 +68,5 @@ export class BlockedRepository {
             b => b.Unblocked_At===null
         );
     }
-
-    async IsBlocked(rollNo :string) :Promise<boolean>{
-        const blocked= await this.readBlocked();
-        const blockedEntry=blocked.find(
-            b => b.Roll_NO===rollNo && b.Unblocked_At===null
-        );
-        return !!blockedEntry;
-    }
-
-
 
 }

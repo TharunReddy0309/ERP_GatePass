@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 export interface passAction{
     Action_id:string;
     Pass_id:string;
+    Actor_id:string;
     Roll_NO:string;
     Action_Type:string;
     Timestamp:string;
@@ -16,8 +17,7 @@ export class PassActionsRepository {
 
     private filePath=path.join(
         process.cwd(),
-        'src',
-        'passes',
+        'database',
         'pass-actions.json'
     );
 
@@ -39,12 +39,13 @@ export class PassActionsRepository {
         await fs.writeFile(this.filePath,JSON.stringify(actions,null,2));
     }
 
-    async createAction(passId:string,rollNo:string,action:string){
+    async createAction(passId:string,rollNo:string,ActorID:string,action:string){
         const actions=await this.readActions();
 
         const newAction:passAction={
             Action_id:"ACT-"+uuidv4().slice(0,8),
             Pass_id:passId,
+            Actor_id : ActorID ,
             Roll_NO:rollNo,
             Action_Type:action,
             Timestamp:new Date().toISOString()

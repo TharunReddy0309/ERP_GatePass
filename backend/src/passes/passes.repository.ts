@@ -25,11 +25,9 @@ interface pass{
 @Injectable()
 export class PassesRepository {
 
-
     private filePath=path.join(
         process.cwd(),
-        'src',
-        'data',
+        'database',
         'passes.json'
     );
 
@@ -62,12 +60,14 @@ export class PassesRepository {
         );
     }
 
-    async IsPassActive(rollNo:string): Promise<boolean> {
+    async IsPassActive(rollNo:string,Pass_type:"DAY_PASS" | "HOME_PASS"): Promise<boolean> {
 
         const passes=await this.readPasses();   
         return !!passes.find(
             p => p.RollNo===rollNo &&
-            (p.Status===PassStatus.PENDING || p.Status===PassStatus.Parentapproved || p.Status===PassStatus.CareTakerapproved)
+            p.passtype===Pass_type &&
+            (p.Status===PassStatus.PENDING || p.Status===PassStatus.Parentapproved
+                 || p.Status===PassStatus.CareTakerapproved || p.Status===PassStatus.CHECKEDOUT)
         )
         
     }
