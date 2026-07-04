@@ -63,12 +63,12 @@ export class PassesService {
           throw new Error("Student is currently blocked from raising passes");
         }
         const rollNo = studentData.Roll_NO;
-        
+        const hostelId = studentData.Hostel_Id;
         if(await this.passesRepository.IsPassActive(rollNo,CreatePass.passtype)){
           throw new Error("Pass Already active for this student");
         }
 
-        return await this.passesRepository.createPass(CreatePass,rollNo);
+        return await this.passesRepository.createPass(CreatePass,rollNo,hostelId);
 
     }
 

@@ -4,13 +4,122 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+model User{
+  Id String @id @default(uuid())
+  Name String
+  Email String @unique
+  Phone String @unique
+  Role Role
+  Password_Hash String
+  RefreshToken String?
+  students Student?
+  blocked Blocked[]
+  passactions PassAction[]
+  caretakerHostels Hostel[] @relation("CaretakerRelation")
+  wardenHostels Hostel[]  @relation("WardenRelation")
+}
 
+model Student{
+  Roll_No String @id
+  User_Id String @unique
+  Block_Id String
+  Is_Blocked Boolean @default(false)
+  DEFAULTER_Attempts Int @default(0)
+  PARENT_MAIL String
+  PARENT_NAME String
+  ADDRESS String
+  PARENT_PHONE String
+  Passes Pass[]
+  Blocked Blocked[]
+  student User @relation(fields: [User_Id], references: [Id])
+  hostel Hostel @relation(fields: [Block_Id], references: [Block_Id])
+}
 
+model Hostel{
+  Block_Id String @id
+  CareTaker_Id String
+  Warden_Id String
+  Students Student[]
+  Blocked Blocked[]
+  passes Pass[]
+  caretaker User @relation("CaretakerRelation",  fields:[CareTaker_Id], references:[Id])
+  warden User @relation("WardenRelation", fields:[Warden_Id],references:[Id])
+}
+
+model Pass{
+  passID String @id @default(uuid())
+  RollNo String
+  passType PassType 
+  HostelId String
+  RaisedAt DateTime @default(now())
+  Destination String
+  Purpose String
+  ModeofTransport String
+  QRCODE String @unique
+  Status PassStatus @default(PENDING)
+  Expected_Date String
+  Expected_Time String
+  Actual_Return_Date String?
+  Actual_Return_Time String?
+  actions PassAction[]
+  hostel Hostel @relation(fields: [HostelId], references: [Block_Id])
+  student Student @relation(fields: [RollNo], references: [Roll_No])
+} 
+
+model PassAction{
+  Action_Id String @id @default(uuid())
+  passID String
+  Actor_Id String 
+  Roll_NO String
+  Action_Type String 
+  Timestamp DateTime @default(now())
+  pass        Pass @relation(fields: [passID], references: [passID])
+  actor User @relation(fields: [Actor_Id], references: [Id])
+}
+
+model Blocked{
+  id Int @id @default(autoincrement())
+  
+  Roll_No String 
+  Hostel_id String
+  Blocked_Role_ID String?
+
+  BlockedAt DateTime @default(now())
+  UnblockedAt DateTime?
+
+  student Student @relation(fields: [Roll_No], references: [Roll_No])
+  hostel Hostel @relation(fields: [Hostel_id], references: [Block_Id])
+  warden User? @relation(fields: [Blocked_Role_ID], references: [Id])
+}
+
+enum PassType {
+  DayPass
+  HomePass
+}
+
+enum PassStatus {
+  PENDING 
+  CANCELLED 
+  Parentapproved 
+  CareTakerapproved 
+  CHECKEDIN 
+  CHECKEDOUT
+}
+
+enum Role{
+  STUDENT
+  PARENT
+  CARETAKER
+  WARDEN
+  SECURITY
+  CHIEFWARDEN
+}
