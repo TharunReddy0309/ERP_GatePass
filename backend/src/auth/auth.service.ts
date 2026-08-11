@@ -21,7 +21,7 @@ export class AuthService {
         const salt = randomBytes(8).toString('hex');
         const hash =(await scrypt(body.password,salt,32)) as Buffer;
         const storedPassword = hash.toString('hex') + '*' + salt;
-        const uid = await this.authrepo.createUser({
+        const userId = await this.authrepo.createUser({
             Name: body.Name,
             Email: body.Email,
             PhoneNo: body.PhoneNo,
@@ -29,7 +29,7 @@ export class AuthService {
             Password_Hash: storedPassword,
             RefreshToken: null,
         });
-        return {UserID:uid,message:'User created successfully'};
+        return {UserID: userId, message:'User created successfully'};
     }
 
     async updateUser(userId: string,data: any){

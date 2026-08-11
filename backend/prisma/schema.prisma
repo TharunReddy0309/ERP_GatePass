@@ -90,23 +90,23 @@ model Blocked {
 }
 
 enum PassType {
-  DAY_PASS
-  HOME_PASS
+  DAY_PASS  @map("DayPass")
+  HOME_PASS @map("HomePass")
 }
 
 enum PassStatus {
-  PENDING
-  CANCELLED
-  Parentapproved
-  CareTakerapproved
-  CHECKEDIN
-  CHECKEDOUT
+  PENDING           @map("Pending")
+  CANCELLED         @map("Cancelled")
+  Parentapproved    @map("ParentApproved")
+  CareTakerapproved @map("CaretakerApproved")
+  CHECKEDIN         @map("Active")
+  CHECKEDOUT        @map("Completed")
 }
 
 enum Role {
-  Student
-  CareTaker
-  Warden
-  Parent
-  Security
+  Student    @map("STUDENT")
+  CareTaker  @map("CARETAKER")
+  Warden     @map("WARDEN")
+  Parent     @map("PARENT")
+  Security   @map("SECURITY")
 }

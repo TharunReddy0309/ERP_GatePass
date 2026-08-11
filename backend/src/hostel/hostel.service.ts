@@ -124,7 +124,7 @@ export class HostelService {
             );
         }
         const hostels = await this.hostelrepo.getAll();
-        const hostel = hostels.find(h =>role === UserRole.CARETAKER ? h.CareTaker_Id === user.USER_ID : h.Warden_Id ===user.USER_ID);
+        const hostel = hostels.find(h => role === UserRole.CARETAKER ? h.CareTaker_Id === user.Id : h.Warden_Id === user.Id);
         return {user,hostel};
     }
 

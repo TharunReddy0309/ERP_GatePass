@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {PrismaService} from "src/prisma/prisma.service";
+import {PrismaService} from "../prisma/prisma.service";
 
 interface Hostel {
     Block_Id: string;
@@ -20,7 +20,7 @@ export class HostelRepository {
     }
 
     async addHostel(hostel: Hostel){
-        this.prisma.hostel.create({
+        return await this.prisma.hostel.create({
             data: {
                 Block_Id: hostel.Block_Id,
                 CareTaker_Id: hostel.CareTaker_ID,
@@ -30,15 +30,15 @@ export class HostelRepository {
     }
 
     async deleteHostel(blockId: string){
-        this.prisma.hostel.delete({
+        return await this.prisma.hostel.delete({
             where: {
                 Block_Id: blockId
             }
         });
     }
 
-    async updateHostel(blockId: string,updatedData: Partial<Hostel>){
-        this.prisma.hostel.update({
+    async updateHostel(blockId: string, updatedData: Partial<Hostel>){
+        return await this.prisma.hostel.update({
             where: {
                 Block_Id: blockId
             },

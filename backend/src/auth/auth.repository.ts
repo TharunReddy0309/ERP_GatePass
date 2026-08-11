@@ -1,6 +1,6 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { PrismaService} from "src/prisma/prisma.service";
+import { PrismaService} from "../prisma/prisma.service";
 
 export interface User {
     USER_ID: string;
@@ -26,10 +26,18 @@ export class AuthRepository{
     }
 
 
-    async createUser(userData: any) {
-        return await this.prisma.user.create({
-            data: userData
+    async createUser(userData: any): Promise<string> {
+        const user = await this.prisma.user.create({
+            data: {
+                Name: userData.Name,
+                Email: userData.Email,
+                Phone: userData.PhoneNo ?? userData.Phone,
+                Role: Role[userData.Role as keyof typeof Role],
+                Password_Hash: userData.Password_Hash,
+                RefreshToken: userData.RefreshToken ?? null,
+            }
         });
+        return user.Id;
     }
 
     async deleteUser(userId: string) {
@@ -40,12 +48,17 @@ export class AuthRepository{
         });
     }
 
-    async updateUser(userId: string,updatedData: any){
+    async updateUser(userId: string, updatedData: any){
         return await this.prisma.user.update({
             where: {
                 Id: userId
             },
-            data: updatedData
+            data: {
+                ...(updatedData.Name !== undefined && { Name: updatedData.Name }),
+                ...(updatedData.Email !== undefined && { Email: updatedData.Email }),
+                ...((updatedData.PhoneNo !== undefined || updatedData.Phone !== undefined) && { Phone: updatedData.PhoneNo ?? updatedData.Phone }),
+                ...(updatedData.Password_Hash !== undefined && { Password_Hash: updatedData.Password_Hash }),
+            }
         });
     }
 

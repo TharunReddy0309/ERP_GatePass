@@ -164,19 +164,19 @@ export class StudentService {
                 'User not found',
             );
         }
-        const student =await this.studentrepo.findByUserId(user.USER_ID);
+        const student = await this.studentrepo.findByUserId(user.Id);
         if (!student) {
             throw new NotFoundException(
                 'Student not found',
             );
         }
         return {
-            USER_ID: user.USER_ID,
+            USER_ID: user.Id,
             Roll_NO: student.Roll_No,
 
             Name: user.Name,
             Email: user.Email,
-            PhoneNo: user.PhoneNo,
+            PhoneNo: user.Phone,
 
             Hostel_Id: student.Block_Id,
 
