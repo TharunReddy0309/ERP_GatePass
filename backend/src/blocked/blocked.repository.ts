@@ -9,8 +9,9 @@ export class BlockedRepository {
     async createBlocked(createBlockedDto:CreateBlockedDto){
         return await this.prisma.blocked.create({
             data:{
-                Roll_NO:createBlockedDto.Roll_NO,
+                Roll_No:createBlockedDto.Roll_No,
                 Hostel_id:createBlockedDto.Hostel_id,
+                Blocked_Role_ID: createBlockedDto.Blocked_Role_ID,
             }
         });
     }
@@ -23,12 +24,16 @@ export class BlockedRepository {
             }
         });
 
+        if (!blocked) {
+            return null;
+        }
+
         return await this.prisma.blocked.update({
             where: {
                 id: blocked.id,
             },
             data: {
-                blocked_Role_ID: blockedRoleId,
+                Blocked_Role_ID: blockedRoleId,
                 UnblockedAt: new Date(),
             }
         });
@@ -37,7 +42,7 @@ export class BlockedRepository {
     async getBlockedStudents(){
         return await this.prisma.blocked.findMany({
             where:{
-                Unblocked_At:null
+                UnblockedAt:null
             }
         });
     }

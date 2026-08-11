@@ -49,12 +49,16 @@ export class PassesRepository {
             }
         }));
     }
-    async getByHostel(id:string){
-
-        return this.prisma.pass.findMany({
-            where:{
-                HostelId:id
-            }
+   async getByHostel(id: string) {
+        return await this.prisma.pass.findMany({
+            where: {
+                student: {
+                    Block_Id: id,
+                },
+            },
+            include: {
+                student: true,
+            },
         });
     }
 
@@ -78,11 +82,16 @@ export class PassesRepository {
 
     async getByHostelStatus(id:string,status:PassStatus){
 
-        return this.prisma.pass.findMany({
-            where:{
-                HostelId:id,
-                Status:status
-            }
+        return await this.prisma.pass.findMany({
+            where: {
+                student: {
+                    Block_Id: id,
+                },
+                Status: status,
+            },
+            include: {
+                student: true,
+            },
         });
     }
 
@@ -150,14 +159,13 @@ export class PassesRepository {
         });
     }
 
-    async createPass(createPass: CreatePassDto, rollNo: string,hostelId:string) {
+    async createPass(createPass: CreatePassDto, rollNo: string) {
         const y = uuidv4().slice(0, 8);
         const status =createPass.passtype === "DAY_PASS" ? PassStatus.CareTakerapproved : PassStatus.PENDING;
         return await this.prisma.pass.create({
             data: {
             RollNo: rollNo,
             passType: createPass.passtype,
-            HostelId: hostelId,
             Destination: createPass.destination,
             Purpose: createPass.purpose,
             ModeofTransport: createPass.modeOfTransport,

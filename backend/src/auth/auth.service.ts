@@ -59,7 +59,7 @@ export class AuthService {
             throw new NotFoundException('User not found');
         }
 
-        const [pass_stored , salt] = storedHash.split('*') ;
+        const [pass_stored , salt] = storedHash.Password_Hash.split('*') ;
         const newHash = (await scrypt(pass, salt, 32)) as Buffer;
 
         if(newHash.toString('hex') !== pass_stored){

@@ -4,7 +4,6 @@ import { HostelModule } from './hostel/hostel.module';
 import { StudentModule } from './student/student.module';
 import { PassesModule } from './passes/passes.module';
 import { BlockedModule } from './blocked/blocked.module';
-import { DatabaseModule } from './database/database.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -14,7 +13,6 @@ import { PrismaModule } from './prisma/prisma.module';
         StudentModule,
         PassesModule ,
         BlockedModule,
-        DatabaseModule,
         PrismaModule
     ],
 })

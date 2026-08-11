@@ -37,7 +37,7 @@ export class PassesService {
         if(!studentData){
             throw new Error("Student not found");
         }
-        const rollNo = studentData.Roll_NO;
+        const rollNo = studentData.Roll_No;
         return await this.passesRepository.getMyPasses(rollNo);
     }
 
@@ -59,16 +59,15 @@ export class PassesService {
         if(!studentData){
             throw new Error("Student not found");
         }
-        if(studentData.IS_BLOCKED){
+        if(studentData.Is_Blocked){
           throw new Error("Student is currently blocked from raising passes");
         }
-        const rollNo = studentData.Roll_NO;
-        const hostelId = studentData.Hostel_Id;
+        const rollNo = studentData.Roll_No;
         if(await this.passesRepository.IsPassActive(rollNo,CreatePass.passtype)){
           throw new Error("Pass Already active for this student");
         }
 
-        return await this.passesRepository.createPass(CreatePass,rollNo,hostelId);
+        return await this.passesRepository.createPass(CreatePass,rollNo);
 
     }
 
@@ -82,7 +81,12 @@ export class PassesService {
         }
         const user = await this.authRepository.findUserByEmail(email) ;
         const uid = user.USER_ID ;
-        this.passActionsRepository.createAction(id,found.RollNo,uid,"Pass Cancelled in "+found.HostelId);
+        const student = await this.studentRepository.findByRollNo(found.RollNo);
+        if(!student){
+            throw new Error("Student not found");
+        }
+        const studentBlockId = (student as any).Block_Id ?? (student as any).BlockId ?? (student as any).Block_ID ?? 'unknown';
+        this.passActionsRepository.createAction(id,uid,`Pass Cancelled in ${studentBlockId}`);
         return await this.passesRepository.cancelPass(id);
     }
 
@@ -94,7 +98,12 @@ export class PassesService {
         if(found.Status!==PassStatus.PENDING){
             throw new Error("Only pending pass can be approved");
         }
-        this.passActionsRepository.createAction(id,found.RollNo,'Parent',"Parent Approved in "+found.HostelId); 
+        const student = await this.studentRepository.findByRollNo(found.RollNo);
+        if(!student){
+            throw new Error("Student not found");
+        }
+        const studentBlockId = (student as any).Block_Id ?? (student as any).BlockId ?? (student as any).Block_ID ?? 'unknown';
+        this.passActionsRepository.createAction(id,'Parent',`Parent Approved in ${studentBlockId}`);
         return await this.passesRepository.approveParent(id);
     }
 
@@ -108,7 +117,12 @@ export class PassesService {
         }
         const user = await this.authRepository.findUserByEmail(email) ;
         const uid = user.USER_ID ;
-        this.passActionsRepository.createAction(id,found.RollNo,uid,"Caretaker Approved in "+found.HostelId);
+        const student = await this.studentRepository.findByRollNo(found.RollNo);
+        if(!student){
+            throw new Error("Student not found");
+        }
+        const studentBlockId = (student as any).Block_Id ?? (student as any).BlockId ?? (student as any).Block_ID ?? 'unknown';
+        this.passActionsRepository.createAction(id,uid,`Caretaker Approved in ${studentBlockId}`);
         return await this.passesRepository.approveCaretaker(id);
 
     }
@@ -123,7 +137,12 @@ export class PassesService {
         }
         const user = await this.authRepository.findUserByEmail(email) ;
         const uid = user.USER_ID ;
-        this.passActionsRepository.createAction(id,found.RollNo,uid,"Pass Checked Out at "+found.HostelId);
+        const student = await this.studentRepository.findByRollNo(found.RollNo);
+        if(!student){
+            throw new Error("Student not found");
+        }
+        const studentBlockId = (student as any).Block_Id ?? (student as any).BlockId ?? (student as any).Block_ID ?? 'unknown';
+        this.passActionsRepository.createAction(id,found.RollNo,uid,"Pass Checked Out at "+studentBlockId);
         return await this.passesRepository.checkout(id);
 
     }
@@ -145,7 +164,12 @@ export class PassesService {
         }
         const user = await this.authRepository.findUserByEmail(email) ;
         const uid = user.USER_ID ;
-        this.passActionsRepository.createAction(id,found.RollNo,uid,"Pass Checked In at "+found.HostelId);
+        const student = await this.studentRepository.findByRollNo(found.RollNo);
+        if(!student){
+            throw new Error("Student not found");
+        }
+        const studentBlockId = (student as any).Block_Id ?? (student as any).BlockId ?? (student as any).Block_ID ?? 'unknown';
+        this.passActionsRepository.createAction(id,found.RollNo,uid,`Pass Checked In at ${studentBlockId}`);
         return await this.passesRepository.checkin(id);
 
     }

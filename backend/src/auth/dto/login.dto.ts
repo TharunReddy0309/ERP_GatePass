@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client/wasm';
 import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
 
 export enum UserRole {
@@ -16,6 +17,6 @@ export class LoginDto {
   @MinLength(6)
   password!: string;
 
-  @IsEnum(UserRole)
-  role!: UserRole;
+  @IsEnum(Role)
+  role!:  Role;
 }

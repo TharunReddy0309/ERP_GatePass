@@ -4,18 +4,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class PassActionsRepository {
     constructor(private readonly prisma: PrismaService,){}
-    async createAction(passId:string,rollNo:string,ActorID:string,action:string){
-        return await this.prisma.passActions.create({
+    async createAction(passId:string,ActorID:string,action:string,remarks?:string){
+        return await this.prisma.passAction.create({
             data:{
                 passID:passId,
-                Roll_NO:rollNo,
                 Actor_Id:ActorID,
                 Action_Type:action,
+                Remarks:remarks
             }
         });
     }
     async getAllActions(){
-        return await this.prisma.passActions.findMany({
+        return await this.prisma.passAction.findMany({
             orderBy:{
                 Timestamp:'desc'
             }
