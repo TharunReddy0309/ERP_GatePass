@@ -5,6 +5,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    app.enableCors();
+
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
@@ -13,10 +15,13 @@ async function bootstrap() {
         }),
     );
 
-    await app.listen(3000);
+    const port = Number(process.env.PORT) || 3000;
+    const host = process.env.HOST || '0.0.0.0';
+
+    await app.listen(port, host);
 
     console.log(
-        'Server running on http://localhost:3000',
+        `Server running on http://${host}:${port}`,
     );
 }
 

@@ -22,11 +22,11 @@ export class BlockedController {
   }
 
   @Post("blockStudent")
-  @Roles(UserRole.WARDEN,UserRole.SECURITY,UserRole.CARETAKER)
+  // @Roles(UserRole.WARDEN,UserRole.SECURITY,UserRole.CARETAKER)
   blockStudent(@Body() createBlockedDto: CreateBlockedDto) {
     return this.blockedService.createBlocked(createBlockedDto);
   }
-
+ 
   @Get("getAllBlocked")
   @Roles(UserRole.WARDEN)
   getAllBlocked() {

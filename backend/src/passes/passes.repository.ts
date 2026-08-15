@@ -28,8 +28,16 @@ export class PassesRepository {
         return this.prisma.pass.findMany();
     }
 
-    async getPassById(id:string){
+    async getPassByQRId(id:string){
 
+        return this.prisma.pass.findUnique({
+            where:{
+                QRCODE:id
+            }
+        });
+    }
+
+    async getPassByPassId(id:string){
         return this.prisma.pass.findUnique({
             where:{
                 passID:id
