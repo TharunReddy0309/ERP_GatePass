@@ -1,5 +1,5 @@
 import { Injectable , NotFoundException , BadRequestException , UnauthorizedException} from '@nestjs/common';
-import { LoginDto, toPrismaRole } from './dto/login.dto';
+import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { signAccessToken , signRefreshToken , verifyAccessToken , verifyRefreshToken } from './helper/jwt.helper';
 import { AuthRepository } from './auth.repository';
@@ -47,13 +47,25 @@ export class AuthService {
         );
     }
 
+    async updateMe(email: string, data: { Name?: string; Phone?: string; PhoneNo?: string }) {
+        const user = await this.authrepo.findUserByEmail(email);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        await this.authrepo.updateUser(user.Id, {
+            Name: data.Name,
+            Phone: data.Phone ?? data.PhoneNo,
+        });
+        return { message: 'Profile updated successfully' };
+    }
+
     async ValidateandGenerateTokens(body:LoginDto){
 
         let email = body.Email ;
         let pass = body.password ;
         let role = body.role ;
 
-        const storedHash = await this.authrepo.findOne(email, toPrismaRole(role as string)) ;
+        const storedHash = await this.authrepo.findOne(email,role) ;
 
         if(!storedHash){
             throw new NotFoundException('User not found');
@@ -81,16 +93,16 @@ export class AuthService {
     async deleteRefreshToken(UserID:string){
         console.log(UserID);
         await this.authrepo.deleteToken(UserID) ;
-    } 
+    }
 
     async RotateTokens(body:RefreshDto) {
-        
+
         let userid = body.userId ;
         let reftok = body.refreshToken ;
 
         try {
             verifyRefreshToken(reftok);
-            
+
         } catch {
             throw new UnauthorizedException(
                 'Invalid refresh token',
@@ -120,12 +132,6 @@ export class AuthService {
         const accessToken = signAccessToken({ email, role });
         const refreshToken = signRefreshToken({email , role});
         return { accessToken, refreshToken, userid};
-    }
-
-    async updateMeByEmail(email: string, data: { Name?: string; Phone?: string }) {
-        const user = await this.authrepo.findUserByEmail(email);
-        if (!user) throw new Error('User not found');
-        await this.authrepo.updateUser(user.Id, data);
     }
 
 }

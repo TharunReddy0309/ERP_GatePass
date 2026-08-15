@@ -3,3 +3,4 @@ export const portalImages = {
   instituteLogo: require("./images/auth/institute-logo.png"),
   profile: require("./images/caretaker/profile.png"),
 };
+

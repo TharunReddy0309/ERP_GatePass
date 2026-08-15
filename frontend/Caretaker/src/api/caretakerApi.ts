@@ -1,14 +1,8 @@
 import { Platform } from 'react-native';
 import { getAccessToken } from '../utils/tokenStore';
 
-// ─── Base URL ──────────────────────────────────────────────────────────────
-// Web (browser on same machine) → localhost, Phone (Expo Go) → LAN IP
-export const BASE_URL =
-  Platform.OS === 'web'
-    ? 'http://localhost:3000'
-    : 'http://10.0.43.53:3000';
+export const BASE_URL = "http://10.0.98.89:3000";
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
 async function authHeaders(): Promise<Record<string, string>> {
   const token = await getAccessToken();
   return {
@@ -42,7 +36,6 @@ async function put<T>(path: string, body?: object): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// ─── Auth ──────────────────────────────────────────────────────────────────
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
@@ -65,7 +58,6 @@ export async function loginCaretaker(
   return res.json() as Promise<LoginResponse>;
 }
 
-// ─── Profile / getMe ───────────────────────────────────────────────────────
 export interface CaretakerMe {
   user: {
     Id: string;
@@ -89,7 +81,6 @@ export function updateMyProfile(data: { Name?: string; Phone?: string }): Promis
   return put<{ message: string }>('/auth/updateMe', data);
 }
 
-// ─── Passes ────────────────────────────────────────────────────────────────
 export interface PassStudent {
   Roll_No: string;
   Block_Id: string;
@@ -114,30 +105,22 @@ export interface Pass {
   student?: PassStudent;
 }
 
-/**
- * Home passes with status Parentapproved for the caretaker's hostel.
- * These are the passes awaiting caretaker approval.
- */
 export function getParentApprovedPasses(hostelId: string): Promise<Pass[]> {
   return get<Pass[]>(`/Passes/getByHostelStatus/${hostelId}/Parentapproved`);
 }
 
-/** Currently checked-out students for the hostel */
 export function getCurrentlyOut(hostelId: string): Promise<Pass[]> {
   return get<Pass[]>(`/Passes/getByHostelStatus/${hostelId}/CHECKEDOUT`);
 }
 
-/** Approve a pass (caretaker approval) */
 export function approvePass(passId: string): Promise<Pass> {
   return put<Pass>(`/Passes/approveCaretaker/${passId}`);
 }
 
-/** Reject / cancel a pass */
 export function rejectPass(passId: string): Promise<Pass> {
   return put<Pass>(`/Passes/rejectPass/${passId}`);
 }
 
-// ─── Students ──────────────────────────────────────────────────────────────
 export interface StudentRecord {
   USER_ID: string;
   Roll_NO: string;
@@ -149,7 +132,7 @@ export interface StudentRecord {
   DEFAULTER_Attempts: number;
 }
 
-/** All students in a specific hostel block */
 export function getStudentsByHostel(hostelId: string): Promise<StudentRecord[]> {
   return get<StudentRecord[]>(`/student/getbyHostel/${hostelId}`);
 }
+

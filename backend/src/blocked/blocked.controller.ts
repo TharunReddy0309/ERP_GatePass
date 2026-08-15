@@ -8,7 +8,6 @@ import { RolesGuard } from '../auth/guard/role.guard';
 import { UserRole } from '../auth/dto/login.dto';
 import { Roles } from '../auth/guard/roles.decorator';
 
-
 @UseGuards(JwtGuard,RolesGuard)
 @Controller('Blocked')
 
@@ -22,11 +21,11 @@ export class BlockedController {
   }
 
   @Post("blockStudent")
-  // @Roles(UserRole.WARDEN,UserRole.SECURITY,UserRole.CARETAKER)
+  @Roles(UserRole.WARDEN,UserRole.SECURITY,UserRole.CARETAKER)
   blockStudent(@Body() createBlockedDto: CreateBlockedDto) {
     return this.blockedService.createBlocked(createBlockedDto);
   }
- 
+
   @Get("getAllBlocked")
   @Roles(UserRole.WARDEN)
   getAllBlocked() {
@@ -34,3 +33,4 @@ export class BlockedController {
   }
 
 }
+

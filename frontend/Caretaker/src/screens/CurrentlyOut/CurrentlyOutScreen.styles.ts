@@ -38,3 +38,4 @@ export const styles = StyleSheet.create({
     gap: 16,
   },
 });
+

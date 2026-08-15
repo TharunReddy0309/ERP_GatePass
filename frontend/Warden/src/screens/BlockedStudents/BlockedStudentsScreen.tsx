@@ -47,11 +47,11 @@ export default function BlockedStudentsScreen() {
       const studentMap = new Map(hostelStudents.map((s) => [s.Roll_NO, s]));
 
       const mapped: BlockedStudent[] = myBlocked.map((b) => {
-        // Find latest block action for this student
+
         const studentActions = actions
-          .filter((a) => a.passID === b.Roll_No) // Using passID = rollNo for block/unblock actions
+          .filter((a) => a.passID === b.Roll_No)
           .sort((a, b) => new Date(b.Timestamp).getTime() - new Date(a.Timestamp).getTime());
-        
+
         const latestRemark = studentActions[0]?.Remarks ?? 'No remark provided';
         const studentData = studentMap.get(b.Roll_No);
 
@@ -111,7 +111,7 @@ export default function BlockedStudentsScreen() {
           value={query}
           onChangeText={setQuery}
         />
-        
+
         {loading ? (
           <View style={{ alignItems: 'center', marginTop: 48 }}>
             <ActivityIndicator size="large" color="#002147" />
@@ -154,3 +154,4 @@ export default function BlockedStudentsScreen() {
     </AppShell>
   );
 }
+

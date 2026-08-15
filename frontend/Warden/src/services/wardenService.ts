@@ -1,14 +1,11 @@
-// ─── Shared types used by components ─────────────────────────────────────
-// Mock data removed — all data now fetched via src/api/wardenApi.ts
-
 export type PassType = 'DAYPASS' | 'HOMEPASS';
 
 export interface ApprovalRequest {
-  id: string;       // passID
+  id: string;
   name: string;
   rollNo: string;
   passType: PassType;
-  duration: string; // formatted date string
+  duration: string;
   reason: string;
 }
 
@@ -40,10 +37,11 @@ export interface CurrentlyOutStudent {
 }
 
 export interface BlockedStudent {
-  id: string;          // blocked record id
+  id: string;
   rollNo: string;
   name: string;
   hostelId: string;
-  date: string;        // formatted block date
+  date: string;
   remark: string | null;
 }
+

@@ -44,7 +44,7 @@ export default function DashboardScreen() {
             getAllBlocked().catch(() => []),
           ]);
           if (!active) return;
-          // Filter blocked to only this hostel
+
           const myBlocked = blocked.filter((b) => b.Hostel_id === hid);
           setCounts({
             awaiting: approvals.length,
@@ -107,3 +107,4 @@ export default function DashboardScreen() {
     </AppShell>
   );
 }
+

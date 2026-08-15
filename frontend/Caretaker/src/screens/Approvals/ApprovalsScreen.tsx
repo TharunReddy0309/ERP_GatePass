@@ -41,7 +41,7 @@ export default function ApprovalsScreen() {
       const hid = me.hostel?.Block_Id ?? null;
       if (hid) {
         const data = await getParentApprovedPasses(hid);
-        // show only HOME_PASS passes for caretaker approval
+
         setPasses(data.filter((p) => p.passType === "HOME_PASS"));
       }
     } catch (e: any) {
@@ -58,7 +58,7 @@ export default function ApprovalsScreen() {
       await approvePass(passId);
       setHandledIds((curr) => [...curr, passId]);
     } catch (e: any) {
-      // Pass may have already been acted on — refresh the list
+
       await loadData();
     }
   };
@@ -68,7 +68,7 @@ export default function ApprovalsScreen() {
       await rejectPass(passId);
       setHandledIds((curr) => [...curr, passId]);
     } catch (e: any) {
-      // Same — refresh to show current state
+
       await loadData();
     }
   };
@@ -133,3 +133,4 @@ export default function ApprovalsScreen() {
     </AppShell>
   );
 }
+

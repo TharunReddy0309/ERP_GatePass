@@ -30,3 +30,4 @@ export const styles = StyleSheet.create({
     paddingVertical: 0,
   },
 });
+

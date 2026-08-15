@@ -26,8 +26,7 @@ export default function DashboardScreen() {
           getParentApprovedPasses(hid),
           getCurrentlyOut(hid),
         ]);
-        
-        // Count only HOME_PASS for caretaker approval
+
         setAwaitingCount(passes.filter((p) => p.passType === "HOME_PASS").length);
         setOutCount(out.length);
       }
@@ -75,3 +74,4 @@ export default function DashboardScreen() {
     </AppShell>
   );
 }
+

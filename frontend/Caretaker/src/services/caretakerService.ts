@@ -1,14 +1,11 @@
-// ─── Shared types used by components ─────────────────────────────────────
-// Mock data removed — all data now fetched via src/api/caretakerApi.ts
-
 export type PassType = 'DAYPASS' | 'HOMEPASS';
 
 export interface ApprovalRequest {
-  id: string;       // passID
+  id: string;
   name: string;
   rollNo: string;
   passType: PassType;
-  duration: string; // formatted date string
+  duration: string;
   reason: string;
 }
 
@@ -30,7 +27,6 @@ export interface CurrentlyOutStudent {
   overdue?: boolean;
 }
 
-// ─── Static dashboard tile config (labels only — counts fetched via API in future) ─
 export const dashboardMetrics = [
   {
     id: 'awaiting',
@@ -45,3 +41,4 @@ export const dashboardMetrics = [
     tone: 'default' as const,
   },
 ];
+

@@ -3,3 +3,4 @@ export const caretakerImages = {
   instituteLogo: require("./images/auth/institute-logo.png"),
   profile: require("./images/caretaker/profile.png"),
 };
+

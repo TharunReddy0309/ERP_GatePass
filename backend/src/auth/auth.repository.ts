@@ -1,6 +1,5 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { toPrismaRole } from '../auth/dto/login.dto';
 import { PrismaService} from "../prisma/prisma.service";
 
 export interface User {
@@ -13,11 +12,10 @@ export interface User {
     RefreshToken: string | null;
 }
 
-
 @Injectable()
 export class AuthRepository{
     constructor(private readonly prisma: PrismaService,){}
-    
+
     async findUserByEmail(email: string):Promise<any> {
         return await this.prisma.user.findUnique({
             where: {
@@ -26,14 +24,13 @@ export class AuthRepository{
         });
     }
 
-
     async createUser(userData: any): Promise<string> {
         const user = await this.prisma.user.create({
             data: {
                 Name: userData.Name,
                 Email: userData.Email,
                 Phone: userData.PhoneNo ?? userData.Phone,
-                Role: toPrismaRole(userData.Role),
+                Role: Role[userData.Role as keyof typeof Role],
                 Password_Hash: userData.Password_Hash,
                 RefreshToken: userData.RefreshToken ?? null,
             }
@@ -69,7 +66,7 @@ export class AuthRepository{
                 Email: email,
                 Role: role
             },
-            select: {       
+            select: {
                 Id: true,
                 Name: true,
                 Email: true,
@@ -156,3 +153,4 @@ export class AuthRepository{
     }
 
 }
+

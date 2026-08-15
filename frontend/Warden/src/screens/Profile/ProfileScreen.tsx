@@ -128,7 +128,6 @@ export default function ProfileScreen() {
               />
             </View>
 
-            {/* Edit / Save / Cancel buttons */}
             {editing ? (
               <View style={styles.buttonRow}>
                 <Pressable style={[styles.actionButton, styles.secondaryButton]} onPress={handleCancel}>
@@ -166,3 +165,4 @@ export default function ProfileScreen() {
     </AppShell>
   );
 }
+

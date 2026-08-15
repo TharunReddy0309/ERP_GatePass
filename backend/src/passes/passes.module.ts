@@ -12,6 +12,6 @@ import { Defaulter } from 'src/common/defaulter';
 @Module({
   imports: [BlockedModule],
   controllers: [PassesController],
-  providers: [PassesService, PassesRepository, PassActionsRepository ,AuthRepository ,StudentRepository,BlockedService,HostelRepository,Defaulter],
+  providers: [PassesService, PassesRepository, PassActionsRepository, AuthRepository, StudentRepository, BlockedService, HostelRepository, Defaulter],
 })
-export class PassesModule {}
+export class PassesModule { }

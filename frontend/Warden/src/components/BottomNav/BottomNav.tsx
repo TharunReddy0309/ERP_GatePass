@@ -77,3 +77,4 @@ export default function BottomNav({ activeTab }: BottomNavProps) {
     </View>
   );
 }
+

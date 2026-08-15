@@ -162,3 +162,4 @@ export const styles = StyleSheet.create({
     color: "#708AB5",
   },
 });
+

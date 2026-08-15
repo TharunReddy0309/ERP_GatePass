@@ -5,18 +5,9 @@ export enum UserRole {
   STUDENT = 'STUDENT',
   CARETAKER = 'CARETAKER',
   WARDEN = 'WARDEN',
-  PARENT = 'PARENT',
+  PARENT = 'PARENT' ,
   SECURITY = 'SECURITY'
 }
-
-// Converts uppercase UserRole value → Prisma Role enum
-export const toPrismaRole = (r: string): Role => ({
-  STUDENT: Role.Student,
-  CARETAKER: Role.CareTaker,
-  WARDEN: Role.Warden,
-  PARENT: Role.Parent,
-  SECURITY: Role.Security,
-} as Record<string, Role>)[r] ?? Role.Warden;
 
 export class LoginDto {
   @IsEmail()
@@ -26,6 +17,6 @@ export class LoginDto {
   @MinLength(6)
   password!: string;
 
-  @IsEnum(UserRole)
-  role!: UserRole;
+  @IsEnum(Role)
+  role!:  Role;
 }

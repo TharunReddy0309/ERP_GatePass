@@ -1,8 +1,0 @@
-
-> warden@1.0.0 start
-> expo start --lan --port 8085
-
-Starting project at C:\Users\bhumi\Desktop\ERP_GatePass\frontend\Warden
-Using src/app as the root directory for Expo Router.
-React Compiler enabled
-Starting Metro Bundler

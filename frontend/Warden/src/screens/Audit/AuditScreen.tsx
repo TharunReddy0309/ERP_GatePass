@@ -1,6 +1,5 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import AppShell from '../../components/AppShell/AppShell';
 import HeroHeader from '../../components/HeroHeader/HeroHeader';
@@ -10,12 +9,9 @@ import {
   getAllPassActions,
   getPassesByHostel,
   getStudentsByHostel,
-  type PassAction,
 } from '../../api/wardenApi';
 import type { AuditEntry } from '../../services/wardenService';
 import { styles } from './AuditScreen.styles';
-
-type AuditFilter = 'ALL' | AuditEntry['action'];
 
 export default function AuditScreen() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
@@ -23,8 +19,6 @@ export default function AuditScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<AuditFilter>('ALL');
-  const [page, setPage] = useState(1);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -52,22 +46,21 @@ export default function AuditScreen() {
         let name = '';
         let rollNo = '';
 
-        // If passID is a valid pass, grab student info
         if (passMap.has(action.passID)) {
           const pass = passMap.get(action.passID)!;
           rollNo = pass.RollNo;
-          name = pass.student?.Roll_No ?? pass.RollNo; 
-          // Note: backend doesn't populate pass.student.Name. We try matching with studentMap
+          name = pass.student?.Roll_No ?? pass.RollNo;
+
           const s = studentMap.get(rollNo);
           if (s && s.Name) name = s.Name;
-        } 
+        }
         // If passID is a roll number (for block/unblock actions)
         else if (studentMap.has(action.passID)) {
           const s = studentMap.get(action.passID)!;
           rollNo = s.Roll_NO;
           name = s.Name ?? s.Roll_NO;
         } else {
-          continue; // action not for this hostel
+          continue;
         }
 
         mapped.push({
@@ -94,29 +87,15 @@ export default function AuditScreen() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return entries.filter((entry) => {
-      // Basic matching for filter. If action contains the word...
-      let matchesFilter = true;
-      if (filter !== 'ALL') {
-        matchesFilter = entry.action.toLowerCase().includes(filter.toLowerCase());
-      }
-      
       const matchesQuery =
         !normalizedQuery ||
         [entry.name, entry.rollNo, entry.action, entry.remarks].some(
           (value) => value && value.toLowerCase().includes(normalizedQuery)
         );
 
-      return matchesFilter && matchesQuery;
+      return matchesQuery;
     });
-  }, [filter, query, entries]);
-
-  const cycleFilter = () => {
-    setFilter((current) => {
-      if (current === 'ALL') return 'Out';
-      if (current === 'Out') return 'In';
-      return 'ALL';
-    });
-  };
+  }, [query, entries]);
 
   return (
     <AppShell activeTab="audit">
@@ -132,22 +111,6 @@ export default function AuditScreen() {
             value={query}
             onChangeText={setQuery}
           />
-          <View style={styles.actionsRow}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={cycleFilter}
-              style={styles.toolButton}
-            >
-              <Ionicons name="filter" size={16} color="#191C1E" />
-              <Text style={styles.toolText}>
-                {filter === 'ALL' ? 'Filter' : filter}
-              </Text>
-            </Pressable>
-            <Pressable accessibilityRole="button" style={styles.toolButton}>
-              <Ionicons name="download-outline" size={16} color="#191C1E" />
-              <Text style={styles.toolText}>Export CSV</Text>
-            </Pressable>
-          </View>
         </View>
 
         {loading ? (
@@ -217,3 +180,4 @@ export default function AuditScreen() {
     </AppShell>
   );
 }
+

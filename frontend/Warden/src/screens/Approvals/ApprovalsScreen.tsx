@@ -59,7 +59,7 @@ export default function ApprovalsScreen() {
       await approvePass(passId);
       setHandledIds((curr) => [...curr, passId]);
     } catch (e: any) {
-      // Pass may have already been acted on by another user — refresh the list
+
       await loadData();
     }
   };
@@ -69,7 +69,7 @@ export default function ApprovalsScreen() {
       await rejectPass(passId);
       setHandledIds((curr) => [...curr, passId]);
     } catch (e: any) {
-      // Same — refresh to show current state
+
       await loadData();
     }
   };
@@ -134,3 +134,4 @@ export default function ApprovalsScreen() {
     </AppShell>
   );
 }
+
