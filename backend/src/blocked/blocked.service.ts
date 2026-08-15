@@ -3,12 +3,15 @@ import { CreateBlockedDto } from './dto/create-blocked.dto';
 import { UpdateBlockedDto } from './dto/update-blocked.dto';
 import { BlockedRepository } from './blocked.repository';
 import { StudentRepository } from '../student/student.repository';
+import { PassActionsRepository } from 'src/passes/passactions.repository';
+import { time } from 'console';
 
 @Injectable()
 export class BlockedService {
 
   constructor(
     private readonly blockedRepository: BlockedRepository,
+    private readonly passActionsRepository: PassActionsRepository,
     private readonly studentRepository: StudentRepository
   ){}
 
@@ -37,7 +40,7 @@ export class BlockedService {
     }
     if(!student.Is_Blocked){
       throw new Error("Student is not currently blocked");
-    } 
+    }
     if(!updateBlockedDto.Blocked_Role_id){
       throw new Error("Blocked_Role_id is required for unblocking");
     }

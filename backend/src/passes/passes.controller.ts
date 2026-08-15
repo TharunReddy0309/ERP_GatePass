@@ -25,7 +25,7 @@ export class PassesController {
   }
 
   @Get("getByStatus/:status")
-  @Roles(UserRole.WARDEN,UserRole.CARETAKER)
+  // @Roles(UserRole.WARDEN,UserRole.CARETAKER)
   async getByStatus(@Param('status') status: PassStatus) {
     return await this.passesService.getByStatus(status);
   }
@@ -72,16 +72,20 @@ export class PassesController {
     return await this.passesService.approveCaretaker(id,req.user.email);
   }
 
+  @Put("rejectPass/:id")
+  @Roles(UserRole.WARDEN, UserRole.CARETAKER)
+  async rejectPass(@Param('id') id: string, @Req() req:any) {
+    return await this.passesService.rejectPass(id,req.user.email);
+  }
+
   @Put("Checkin/:id")
-  @Roles(UserRole.SECURITY)
-  async checkin(@Param('id') id: string, @Req() req:any) {
-    return await this.passesService.checkin(id,req.user.email);
+  async checkin(@Param('id') id: string) {
+    return await this.passesService.checkin(id);
   }
 
   @Put("Checkout/:id")
-  @Roles(UserRole.SECURITY)
-  async checkout(@Param('id') id: string, @Req() req:any) {
-    return await this.passesService.checkout(id,req.user.email);
+  async checkout(@Param('id') id: string) {
+    return await this.passesService.checkout(id);
   }
 
 }

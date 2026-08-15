@@ -1,5 +1,6 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
 import { Role } from "@prisma/client";
+import { toPrismaRole } from '../auth/dto/login.dto';
 import { PrismaService} from "../prisma/prisma.service";
 
 export interface User {
@@ -32,7 +33,7 @@ export class AuthRepository{
                 Name: userData.Name,
                 Email: userData.Email,
                 Phone: userData.PhoneNo ?? userData.Phone,
-                Role: Role[userData.Role as keyof typeof Role],
+                Role: toPrismaRole(userData.Role),
                 Password_Hash: userData.Password_Hash,
                 RefreshToken: userData.RefreshToken ?? null,
             }

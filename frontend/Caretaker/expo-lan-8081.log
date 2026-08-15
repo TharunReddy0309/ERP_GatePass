@@ -1,0 +1,7 @@
+
+> caretaker@1.0.0 start
+> expo start --lan --port 8081
+
+Starting project at C:\Users\bhumi\Desktop\ERP_GatePass\frontend\Caretaker
+› Port 8081 is being used by another process
+› Skipping dev server
