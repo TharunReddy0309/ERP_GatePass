@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateBlockedDto {
     @IsNotEmpty()
@@ -13,4 +13,11 @@ export class CreateBlockedDto {
     @IsString()
     Blocked_Role_ID!: string;
 
+    @IsOptional()
+    @IsString()
+    Reason?: string;
+
+    @IsOptional()
+    @IsString()
+    Proof_Url?: string;
 }

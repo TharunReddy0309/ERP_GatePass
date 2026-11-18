@@ -1,21 +1,73 @@
-import { Platform } from 'react-native';
-import { getAccessToken } from '../utils/tokenStore';
+import { getAccessToken, getRefreshToken, getUserId, saveTokens, clearTokens } from '../utils/tokenStore';
+import { triggerCaretakerLogout } from '../utils/logoutSignal';
 
-export const BASE_URL = "http://10.0.98.89:3000";
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
-async function authHeaders(): Promise<Record<string, string>> {
-  const token = await getAccessToken();
-  return {
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+async function refreshAccessToken(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) return refreshPromise;
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const refreshToken = await getRefreshToken();
+      const userId = await getUserId();
+      if (!refreshToken || !userId) return null;
+
+      const res = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, refreshToken }),
+      });
+
+      if (!res.ok) {
+        await clearTokens();
+        triggerCaretakerLogout();
+        return null;
+      }
+
+      const data = await res.json();
+      await saveTokens(data.accessToken, data.refreshToken, data.userid);
+      return data.accessToken as string;
+    } catch {
+      await clearTokens();
+      triggerCaretakerLogout();
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+async function fetchWithAuth(input: string, init: RequestInit = {}): Promise<Response> {
+  const accessToken = await getAccessToken();
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(init.headers as Record<string, string> ?? {}),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   };
+
+  const res = await fetch(input, { ...init, headers });
+
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+    if (!newToken) {
+      return res;
+    }
+    const retryHeaders = { ...headers, Authorization: `Bearer ${newToken}` };
+    return fetch(input, { ...init, headers: retryHeaders });
+  }
+
+  return res;
 }
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'GET',
-    headers: await authHeaders(),
-  });
+  const res = await fetchWithAuth(`${BASE_URL}${path}`);
   if (!res.ok) {
     const body = await res.text();
     throw new Error(body || `GET ${path} failed (${res.status})`);
@@ -24,9 +76,8 @@ async function get<T>(path: string): Promise<T> {
 }
 
 async function put<T>(path: string, body?: object): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetchWithAuth(`${BASE_URL}${path}`, {
     method: 'PUT',
-    headers: await authHeaders(),
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) {

@@ -1,15 +1,14 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { type Href, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Image, Pressable, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, Text, TextInput, View, Alert } from "react-native";
 
 import { caretakerImages } from "../../assets";
-import { loginCaretaker } from "../../api/caretakerApi";
+import { loginCaretaker, BASE_URL } from "../../api/caretakerApi";
 import { saveTokens } from "../../utils/tokenStore";
+import { triggerCaretakerLogin } from "../../utils/logoutSignal";
 import { styles } from "./AuthScreen.styles";
 
 export default function AuthScreen() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,9 +27,38 @@ export default function AuthScreen() {
         password,
       );
       await saveTokens(accessToken, refreshToken, UserID);
-      router.replace("/dashboard" as Href);
+      triggerCaretakerLogin();
     } catch (e: any) {
       setError(e?.message ?? "Login failed. Check credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert("Email Required", "Please enter your email to reset your password.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      if (!res.ok) {
+        const errBody = await res.text();
+        throw new Error(errBody || "Failed to send reset link.");
+      }
+      Alert.alert("Success", "A password reset link has been sent to your email.");
+    } catch (e: any) {
+      let msg = e.message;
+      try {
+        const parsed = JSON.parse(e.message);
+        msg = parsed.message || msg;
+      } catch (_) {}
+      Alert.alert("Error", msg || "Failed to send reset link.");
     } finally {
       setLoading(false);
     }
@@ -68,7 +96,7 @@ export default function AuthScreen() {
 
           <View style={styles.labelRow}>
             <Text style={styles.label}>Password</Text>
-            <Pressable accessibilityRole="button" hitSlop={8}>
+            <Pressable accessibilityRole="button" hitSlop={8} onPress={handleForgotPassword}>
               <Text style={styles.forgot}>Forgot Password?</Text>
             </Pressable>
           </View>

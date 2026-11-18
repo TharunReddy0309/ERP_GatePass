@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 
 import AppShell from '../../components/AppShell/AppShell';
 import HeroHeader from '../../components/HeroHeader/HeroHeader';
@@ -23,6 +24,7 @@ export default function BlockedStudentsScreen() {
   const [query, setQuery] = useState('');
   const [unblockedIds, setUnblockedIds] = useState<string[]>([]);
   const [wardenId, setWardenId] = useState<string | null>(null);
+  const [modalUri, setModalUri] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -47,12 +49,11 @@ export default function BlockedStudentsScreen() {
       const studentMap = new Map(hostelStudents.map((s) => [s.Roll_NO, s]));
 
       const mapped: BlockedStudent[] = myBlocked.map((b) => {
-
         const studentActions = actions
           .filter((a) => a.passID === b.Roll_No)
           .sort((a, b) => new Date(b.Timestamp).getTime() - new Date(a.Timestamp).getTime());
 
-        const latestRemark = studentActions[0]?.Remarks ?? 'No remark provided';
+        const latestRemark = studentActions[0]?.Remarks ?? null;
         const studentData = studentMap.get(b.Roll_No);
 
         return {
@@ -62,6 +63,8 @@ export default function BlockedStudentsScreen() {
           hostelId: b.Hostel_id,
           date: new Date(b.BlockedAt).toLocaleDateString(),
           remark: latestRemark,
+          reason: (b.Reason === 'MISCAN_PROXY' ? 'MISCAN_PROXY' : 'LATE_ARRIVAL') as 'LATE_ARRIVAL' | 'MISCAN_PROXY',
+          proofUrl: b.Proof_Url ?? null,
         };
       });
 
@@ -129,10 +132,29 @@ export default function BlockedStudentsScreen() {
                   </View>
                   <Ionicons name="ban-outline" size={20} color="#E51B23" />
                 </View>
+
                 <View style={styles.reasonBand}>
-                  <Text style={styles.reason}>{student.remark}</Text>
+                  {student.reason === 'MISCAN_PROXY' ? (
+                    <View style={styles.badgeMiscan}>
+                      <Text style={styles.badgeText}>Miscan (Proxy)</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.badgeLateArrival}>
+                      <Text style={styles.badgeText}>Late Arrival</Text>
+                    </View>
+                  )}
                 </View>
+
                 <View style={styles.cardBody}>
+                  {student.reason === 'MISCAN_PROXY' && student.proofUrl ? (
+                    <Pressable onPress={() => setModalUri(student.proofUrl)} style={styles.proofThumbContainer}>
+                      <Image
+                        source={{ uri: student.proofUrl }}
+                        style={styles.proofThumb}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                  ) : null}
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => handleUnblock(student.rollNo)}
@@ -151,7 +173,19 @@ export default function BlockedStudentsScreen() {
           </View>
         )}
       </View>
+
+      <Modal visible={!!modalUri} animationType="fade" statusBarTranslucent transparent>
+        <View style={styles.modalOverlay}>
+          <Image
+            source={{ uri: modalUri ?? undefined }}
+            style={styles.modalImage}
+            contentFit="contain"
+          />
+          <Pressable style={styles.modalCloseButton} onPress={() => setModalUri(null)}>
+            <Text style={styles.modalCloseText}>Close</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </AppShell>
   );
 }
-

@@ -1,24 +1,40 @@
 {
   "expo": {
-    "name": "Hostel Gatepass",
-    "slug": "rag-gatepass",
-    "version": "1.0.0",
+    "name": "Student",
+    "slug": "student",
+    "version": "1.0.3",
     "orientation": "portrait",
-    "scheme": "rag-gatepass",
+    "icon": "./assets/images/icon.png",
+    "scheme": "student",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "src/assets/**/*"
-    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rag.gatepass"
+      "bundleIdentifier": "com.rag.gatepass",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#F7F9FB"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
-      "package": "com.rag.gatepass"
+      "package": "com.rag.gatepass",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -30,10 +46,32 @@
           "isAccessMediaLocationEnabled": false
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFFFF",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 100,
+          "resizeMode": "contain"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7028e881-13cf-44b3-bbd5-c4b21e9805f1"
+      }
+    },
+    "owner": "gatepassiiits",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7028e881-13cf-44b3-bbd5-c4b21e9805f1"
     }
   }
 }

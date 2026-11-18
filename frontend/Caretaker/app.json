@@ -1,19 +1,26 @@
 {
   "expo": {
-    "name": "Caretaker",
+    "name": "Care Taker",
     "slug": "caretaker",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "scheme": "caretaker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "owner": "gatepassiiits",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rag.gatepass.caretaker"
     },
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "usesCleartextTraffic": true
+      "package": "com.rag.gatepass.caretaker",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      }
     },
     "web": {
       "output": "static"
@@ -23,6 +30,8 @@
       [
         "expo-splash-screen",
         {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 100,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
@@ -32,8 +41,19 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5d995e73-be1e-4c8b-aed2-03dcd1856353"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5d995e73-be1e-4c8b-aed2-03dcd1856353"
     }
   }
 }

@@ -4,3 +4,18 @@
 
 expo-env.d.ts
 # @end expo-cli
+# local env files
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+
+# EAS & Secrets
+eas.json
+credentials.json
+*.jks
+*.keystore
+*.p8
+*.p12
+

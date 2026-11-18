@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const BASE_URL = "http://10.0.98.89:3000";
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
-const SECURITY_SECRET = "gatepass_security_iiit_2026";
+const SECURITY_SECRET = process.env.EXPO_PUBLIC_SECURITY_SECRET!;
 
 export function buildSecuritySig(qrId: string): string {
   return `${SECURITY_SECRET}::${Date.now()}::${qrId}`;

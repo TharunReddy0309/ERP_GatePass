@@ -43,5 +43,7 @@ export interface BlockedStudent {
   hostelId: string;
   date: string;
   remark: string | null;
+  reason: 'LATE_ARRIVAL' | 'MISCAN_PROXY';
+  proofUrl: string | null;
 }
 

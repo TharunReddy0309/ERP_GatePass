@@ -11,6 +11,7 @@ export interface Student {
     PARENT_NAME: string;
     ADDRESS: string;
     PARENT_PHONE: string;
+    Photo_Url?: string;
 }
 
 @Injectable()
@@ -28,7 +29,8 @@ export class StudentRepository {
                 PARENT_MAIL: student.PARENT_MAIL,
                 PARENT_NAME: student.PARENT_NAME,
                 ADDRESS: student.ADDRESS,
-                PARENT_PHONE: student.PARENT_PHONE
+                PARENT_PHONE: student.PARENT_PHONE,
+                ...(student.Photo_Url ? { Photo_Url: student.Photo_Url } : {}),
             }
         });
     }
@@ -53,11 +55,22 @@ export class StudentRepository {
         return await this.prisma.student.findMany();
     }
 
+    async getAllStudentsWithUser() {
+        return await this.prisma.student.findMany({
+            include: { user: true },
+        });
+    }
+
     async getByHostel(hostelId: string) {
         return await this.prisma.student.findMany({
-            where: {
-                Block_Id: hostelId
-            }
+            where: { Block_Id: hostelId },
+        });
+    }
+
+    async getByHostelWithUser(hostelId: string) {
+        return await this.prisma.student.findMany({
+            where: { Block_Id: hostelId },
+            include: { user: true },
         });
     }
 

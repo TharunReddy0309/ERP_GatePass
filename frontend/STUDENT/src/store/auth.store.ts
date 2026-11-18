@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 import { loginApi, logoutApi } from "../api/auth.api";
+import { BASE_URL, setLogoutHandler } from "../api/config";
 
 interface AuthState {
   accessToken: string | null;
@@ -55,18 +56,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const accessToken = await SecureStore.getItemAsync("accessToken");
+      const storedAccess = await SecureStore.getItemAsync("accessToken");
       const refreshToken = await SecureStore.getItemAsync("refreshToken");
       const userId = await SecureStore.getItemAsync("userId");
+
+      if (storedAccess && refreshToken && userId) {
+        dispatch({
+          type: "HYDRATE",
+          payload: { accessToken: storedAccess, refreshToken, userId, isLoggedIn: true, isHydrated: true },
+        });
+        return;
+      }
+
+      if (!storedAccess && refreshToken && userId) {
+        try {
+          const res = await fetch(`${BASE_URL}/auth/refresh`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, refreshToken }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            await SecureStore.setItemAsync("accessToken", data.accessToken);
+            await SecureStore.setItemAsync("refreshToken", data.refreshToken);
+            dispatch({
+              type: "HYDRATE",
+              payload: {
+                accessToken: data.accessToken,
+                refreshToken: data.refreshToken,
+                userId,
+                isLoggedIn: true,
+                isHydrated: true,
+              },
+            });
+            return;
+          }
+        } catch {}
+        await SecureStore.deleteItemAsync("accessToken");
+        await SecureStore.deleteItemAsync("refreshToken");
+        await SecureStore.deleteItemAsync("userId");
+      }
+
       dispatch({
         type: "HYDRATE",
-        payload: {
-          accessToken,
-          refreshToken,
-          userId,
-          isLoggedIn: !!accessToken,
-          isHydrated: true,
-        },
+        payload: { accessToken: null, refreshToken: null, userId: null, isLoggedIn: false, isHydrated: true },
       });
     })();
   }, []);
@@ -93,6 +126,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: "LOGOUT" });
   }, []);
 
+  useEffect(() => {
+    setLogoutHandler(() => {
+      SecureStore.deleteItemAsync("accessToken");
+      SecureStore.deleteItemAsync("refreshToken");
+      SecureStore.deleteItemAsync("userId");
+      dispatch({ type: "LOGOUT" });
+    });
+    return () => setLogoutHandler(() => {});
+  }, []);
+
   return React.createElement(AuthContext.Provider, { value: { state, login, logout } }, children);
 }
 
@@ -101,4 +144,3 @@ export function useAuth(): AuthContextValue {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 }
-

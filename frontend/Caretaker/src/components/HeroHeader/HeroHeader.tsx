@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { caretakerImages } from "../../assets";
 import { styles } from "./HeroHeader.styles";
@@ -21,16 +22,17 @@ export default function HeroHeader({
   compactTitle = false,
 }: HeroHeaderProps) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <ImageBackground
       source={caretakerImages.campusGate}
       resizeMode="cover"
-      style={[styles.hero, { height }]}
+      style={[styles.hero, { height: height + insets.top }]}
       imageStyle={styles.heroImage}
     >
       <View style={styles.overlay} />
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: insets.top }]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Go to dashboard"
@@ -66,4 +68,3 @@ export default function HeroHeader({
     </ImageBackground>
   );
 }
-

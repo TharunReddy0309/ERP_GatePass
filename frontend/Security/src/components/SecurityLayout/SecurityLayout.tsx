@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "#DCE2EA",
     backgroundColor: "#FFFFFF",
-    paddingBottom: 6,
   },
   navItem: {
     width: 88,

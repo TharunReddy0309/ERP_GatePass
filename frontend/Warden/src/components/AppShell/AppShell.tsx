@@ -1,8 +1,10 @@
 import React from "react";
 import { ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import BottomNav, { type BottomNavKey } from "../BottomNav/BottomNav";
 import { styles } from "./AppShell.styles";
+import { SPACING } from "../../utils/constants";
 
 interface AppShellProps {
   activeTab: BottomNavKey;
@@ -15,11 +17,14 @@ export default function AppShell({
   children,
   contentContainerStyle,
 }: AppShellProps) {
+  const insets = useSafeAreaInsets();
+  const bottomPad = SPACING.navHeight + Math.max(insets.bottom, 8) + 16;
+
   return (
     <View style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.content, contentContainerStyle]}
+        contentContainerStyle={[{ paddingBottom: bottomPad }, contentContainerStyle]}
       >
         {children}
       </ScrollView>
@@ -27,4 +32,3 @@ export default function AppShell({
     </View>
   );
 }
-

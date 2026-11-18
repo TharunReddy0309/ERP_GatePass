@@ -46,6 +46,17 @@ export class HostelRepository {
         });
     }
 
+    async findByUserId(userId: string) {
+        return await this.prisma.hostel.findFirst({
+            where: {
+                OR: [
+                    { CareTaker_Id: userId },
+                    { Warden_Id: userId },
+                ],
+            },
+        });
+    }
+
     async getAll() {
         return await this.prisma.hostel.findMany();
     }

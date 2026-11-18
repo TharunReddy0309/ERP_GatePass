@@ -4,12 +4,34 @@ import { AuthService } from '../auth/auth.service';
 import { UserRole } from '../auth/dto/login.dto';
 import { StudentRepository } from './student.repository';
 import { AuthRepository } from '../auth/auth.repository';
+import { HostelRepository } from '../hostel/hostel.repository';
 
 @Injectable()
 export class StudentService {
-    constructor(public authservice : AuthService , public studentrepo : StudentRepository , public authrepo : AuthRepository){}
+    constructor(public authservice : AuthService , public studentrepo : StudentRepository , public authrepo : AuthRepository, public hostelrepo: HostelRepository){}
 
-    async addStudent(body: AddStudentDto) {
+    private async resolveCallerBlock(email: string): Promise<string> {
+        const user = await this.authrepo.findUserByEmail(email);
+        if (!user) throw new NotFoundException('Not found');
+        const hostel = await this.hostelrepo.findByUserId(user.Id);
+        if (!hostel) throw new NotFoundException('Not found');
+        return hostel.Block_Id;
+    }
+
+    private convertDriveLink(driveUrl: string): string {
+        const match = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            const fileId = match[1];
+            return `https://drive.google.com/uc?id=${fileId}`;
+        }
+        return driveUrl;
+    }
+
+    async addStudent(body: AddStudentDto, callerEmail: string) {
+        const callerBlock = await this.resolveCallerBlock(callerEmail);
+        if (body.Block_Id !== callerBlock) {
+            throw new NotFoundException('Not found');
+        }
         const existing = await this.studentrepo.findByRollNo(body.Roll_NO,);
         if (existing) {
             throw new BadRequestException(
@@ -24,6 +46,12 @@ export class StudentService {
             role : UserRole.STUDENT,
         });
         const userId = res.UserID ;
+        const encodedName = encodeURIComponent(body.Name);
+        let photoUrl = `https://ui-avatars.com/api/?background=0D1B2A&color=FFE38A&size=256&bold=true&name=${encodedName}`;
+        
+        if (body.Photo_Url) {
+            photoUrl = this.convertDriveLink(body.Photo_Url);
+        }
         await this.studentrepo.addStudent({
             Roll_NO: body.Roll_NO,
             USER_ID: String(userId),
@@ -34,16 +62,16 @@ export class StudentService {
             PARENT_NAME: body.Parent_Name,
             ADDRESS: body.Address,
             PARENT_PHONE: body.Parent_Phone,
+            Photo_Url: photoUrl,
         });
         return {message: 'Student added successfully',userId};
     }
 
-    async deleteStudent(RollNo:string){
+    async deleteStudent(RollNo: string, callerEmail: string) {
+        const callerBlock = await this.resolveCallerBlock(callerEmail);
         const existing = await this.studentrepo.findByRollNo(RollNo);
-        if (!existing) {
-            throw new BadRequestException(
-                'Roll number dosent exists',
-            );
+        if (!existing || existing.Block_Id !== callerBlock) {
+            throw new NotFoundException('Not found');
         }
         const userId = existing.User_Id;
         await this.studentrepo.deleteStudent(RollNo);
@@ -69,92 +97,87 @@ export class StudentService {
             },
         );
 
+        const updateData: any = {
+            Block_Id: body.Block_Id,
+            PARENT_MAIL: body.Parent_Mail,
+            PARENT_NAME: body.Parent_Name,
+            ADDRESS: body.Address,
+            PARENT_PHONE: body.Parent_Phone,
+        };
+
+        if (body.Photo_Url) {
+            updateData.Photo_Url = this.convertDriveLink(body.Photo_Url);
+        }
+
         await this.studentrepo.updateStudent(
             body.Roll_NO,
-            {
-                Block_Id: body.Block_Id,
-                PARENT_MAIL: body.Parent_Mail,
-                PARENT_NAME: body.Parent_Name,
-                ADDRESS: body.Address,
-                PARENT_PHONE: body.Parent_Phone,
-            },
+            updateData,
         );
 
         return {message: 'Student updated successfully',};
     }
 
     async getAll() {
-        const students = await this.studentrepo.getAllStudents();
+        const students = await this.studentrepo.getAllStudentsWithUser();
 
         if (students.length === 0) {
             throw new NotFoundException("No students found");
         }
 
-        const result = await Promise.all(
-            students.map(async (student) => {
-                const user = await this.authrepo.findUserById(student.User_Id);
+        return students.map((student) => ({
+            USER_ID: student.User_Id,
+            Roll_NO: student.Roll_No,
 
-                return {
-                    USER_ID: student.User_Id,
-                    Roll_NO: student.Roll_No,
+            Name: student.user?.Name,
+            Email: student.user?.Email,
+            PhoneNo: student.user?.Phone,
 
-                    Name: user?.Name,
-                    Email: user?.Email,
-                    PhoneNo: user?.Phone,
+            Hostel_Id: student.Block_Id,
+            Photo_Url: student.Photo_Url,
 
-                    Hostel_Id: student.Block_Id,
+            Parent_Name: student.PARENT_NAME,
+            Parent_Mail: student.PARENT_MAIL,
+            Parent_Phone: student.PARENT_PHONE,
 
-                    Parent_Name: student.PARENT_NAME,
-                    Parent_Mail: student.PARENT_MAIL,
-                    Parent_Phone: student.PARENT_PHONE,
+            Address: student.ADDRESS,
 
-                    Address: student.ADDRESS,
-
-                    IS_BLOCKED: student.Is_Blocked,
-                    DEFAULTER_Attempts: student.DEFAULTER_Attempts,
-                };
-            })
-        );
-
-        return result;
+            IS_BLOCKED: student.Is_Blocked,
+            DEFAULTER_Attempts: student.DEFAULTER_Attempts,
+        }));
     }
 
-    async getByHostel(HostelID: string) {
-        const students = await this.studentrepo.getByHostel(HostelID);
+    async getByHostel(HostelID: string, callerEmail: string) {
+        const callerBlock = await this.resolveCallerBlock(callerEmail);
+        if (HostelID !== callerBlock) {
+            throw new NotFoundException('Not found');
+        }
+        const students = await this.studentrepo.getByHostelWithUser(HostelID);
         if (students.length === 0) {
             throw new NotFoundException(
                 "No students found in this hostel"
             );
         }
 
-        const result = await Promise.all(
-            students.map(async (student) => {
-                const user = await this.authrepo.findUserById(student.User_Id);
+        return students.map((student) => ({
+            USER_ID: student.User_Id,
+            Roll_NO: student.Roll_No,
 
-                return {
-                    USER_ID: student.User_Id,
-                    Roll_NO: student.Roll_No,
+            Name: student.user?.Name,
+            Email: student.user?.Email,
+            PhoneNo: student.user?.Phone,
 
-                    Name: user?.Name,
-                    Email: user?.Email,
-                    PhoneNo: user?.Phone,
+            Hostel_Id: student.Block_Id,
+            Photo_Url: student.Photo_Url,
 
-                    Hostel_Id: student.Block_Id,
+            Parent_Name: student.PARENT_NAME,
+            Parent_Mail: student.PARENT_MAIL,
+            Parent_Phone: student.PARENT_PHONE,
 
-                    Parent_Name: student.PARENT_NAME,
-                    Parent_Mail: student.PARENT_MAIL,
-                    Parent_Phone: student.PARENT_PHONE,
+            Address: student.ADDRESS,
 
-                    Address: student.ADDRESS,
-
-                    IS_BLOCKED: student.Is_Blocked,
-                    DEFAULTER_Attempts:
-                        student.DEFAULTER_Attempts,
-                };
-            })
-        );
-
-        return result;
+            IS_BLOCKED: student.Is_Blocked,
+            DEFAULTER_Attempts: student.DEFAULTER_Attempts,
+        }));
     }
 
     async getMe(email: string) {

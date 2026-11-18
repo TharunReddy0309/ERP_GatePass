@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gatepass-backend
+    container_name: gatepass-backend
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      SECURITY_SECRET: ${SECURITY_SECRET}
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+      APP_URL: ${APP_URL}
+      NEON_STORAGE_ENDPOINT: ${NEON_STORAGE_ENDPOINT}
+      NEON_STORAGE_BUCKET: ${NEON_STORAGE_BUCKET}
+      NEON_STORAGE_REGION: ${NEON_STORAGE_REGION}
+      NEON_STORAGE_ACCESS_KEY_ID: ${NEON_STORAGE_ACCESS_KEY_ID}
+      NEON_STORAGE_SECRET_ACCESS_KEY: ${NEON_STORAGE_SECRET_ACCESS_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s

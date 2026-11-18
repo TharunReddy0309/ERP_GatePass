@@ -1,169 +1,80 @@
-# Hostel Gatepass Management System
+# Hostel Gatepass Management System 🏫
 
-Built for: Indian Institute of Information Technology Sricity
+**Built for:** Indian Institute of Information Technology Sricity 
 
-Developed by: K. Raghuveer and B. Tharun Reddy
-
----
-
-## Overview
-
-The Hostel Gatepass Management System automates and streamlines the process of granting, approving, tracking, and auditing student movement in and out of hostel premises.
-
-It replaces traditional paper-based gatepasses with a secure digital workflow that improves:
-- Security
-- Transparency
-- Accountability
-- Ease of management
+**Developed by:** K. Raghuveer and B. Tharun Reddy  
 
 ---
 
-## Stakeholders & Roles
+## 🚀 Project Status
+> **Current Phase: Completed & Deployed to Production ✅**  
+> All four mobile apps (**Student**, **Security**, **Caretaker**, **Warden**) and the **NestJS backend** are fully built, security-hardened, and operational.
 
-### Student
-- Raise gatepass requests
-- View pass status
-- Withdraw pending requests
-- Show QR code at gate
-
-### Parent
-- Approve or reject Home Pass requests
-
-### Caretaker
-- Final approval/rejection of passes
-
-### Warden
-- Monitor violations
-- Block/unblock students
-- View audit logs
-
-### Chief Warden
-- Manage global hostel rules
-- Override blocking restrictions
-
-### Security
-- Perform Outscan and Inscan using QR codes
+- **Backend:** Deployed on Google Cloud Run with serverless PostgreSQL (Neon) and object storage for proxy photo proofs.
+- **Frontend:** Built and distributed via Expo Application Services (EAS Build APKs & EAS OTA updates).
+- **Security:** Fully hardened — strict block-level tenant isolation, role guards, JWT authentication, and HMAC scanner verification.
 
 ---
 
-## Key Features
+## 📖 Overview
+The Hostel Gatepass Management System is a proposed digital platform that automates and streamlines the process of granting, approving, tracking, and auditing student movement in and out of hostel premises. It replaces manual paper-based processes with a structured digital workflow, ensuring enhanced security, transparency, and accountability across all stakeholders.
 
-### 1. Role-Based Access Control
-- Secure authentication system
-- Restricted access for each role
-- No cross-role data visibility
+## 👥 Stakeholders & Roles
+- **Student (Primary User):** Raises, views, and withdraws gatepass requests. Presents QR code at the gate.
+- **Parent (External Approver):** Receives notification for Home Passes, approves or rejects via the portal.
+- **Caretaker (Hostel-Block-Approver):** Gives final approval or rejection for all pass types.
+- **Warden (Hostel Manager):** Blocks/unblocks students, monitors violations, views audit logs.
+- **Chief Warden (Institution Head):** Manages global hostel rules (curfew times, pass durations, advance notice).
+- **Security (Gate Officer):** Scans QR code on student exit (Outscan) and return (Inscan).
 
-### 2. Gatepass Workflow
+## ✨ Key Features (Functional Requirements)
 
-#### Day Pass
-- Instant caretaker approval
-- QR generated immediately
+### 1. Advanced Role Management
+- Strict role-based access control ensuring users only access permitted screens and actions.
+- No cross-role data visibility (e.g., caretakers only see their assigned block).
 
-#### Home Pass
-- Student → Parent → Caretaker approval chain
-- QR generated after final approval
+### 2. Streamlined Gatepass Workflow
+- **Day Pass:** Auto-approved at the caretaker level within seconds with instant QR code generation.
+- **Home Pass:** Requires a full approval chain (Student → Parent → Caretaker) before QR generation.
+- Students can withdraw pending passes.
+- Comprehensive pass records: destination, purpose, transport mode, expected/actual timestamps.
 
-### 3. QR Code Verification
-- Unique QR generated for each pass
-- Outscan during exit
-- Inscan during return
-- Expired QR becomes invalid automatically
+### 3. Smart QR Code & Gate Scanning
+- Cryptographically unique, single-use QR codes generated per approved pass.
+- **Outscan:** Security scans on exit (status: Active).
+- **Inscan:** Security scans on return (status: Completed).
+- Automatic violation flagging for late returns.
 
-### 4. Audit Logs
-Every action is tracked:
-- Submission
-- Approval
-- Rejection
-- Withdrawal
-- Outscan
-- Inscan
+### 4. Comprehensive Audit Trail
+- Every state change (submission, approval, rejection, outscan, inscan) is recorded.
+- Wardens and caretakers have full visibility into the pass history for auditing.
 
-### 5. Violation & Blocking System
-- Late returns are automatically tracked
-- Students exceeding limits get blocked
-- Wardens can manually block/unblock students
+### 5. Automated Violation & Disciplinary Blocking
+- Late returns increment a student's defaulter attempt count.
+- Automatic blocking upon exhausting maximum allowed attempts.
+- Manual block/unblock capabilities for Wardens, with Chief Warden override authority.
 
-### 6. Global Rule Management
-Chief Warden can configure:
-- Curfew timings
-- Pass duration limits
-- Advance notice rules
-- Defaulter limits
+### 6. Dynamic Global Rule Configuration
+- Chief Warden can dynamically update rules (curfew, pass durations, advance notice) without system redeployment or code changes.
 
----
+## ⚙️ Non-Functional Requirements
+- **Performance:** Gate scan operations (Outscan/Inscan) reflect updated status within 2 seconds.
+- **Security:** QR codes are cryptographically unique, bound to specific passes, and tamper-proof.
+- **Reliability:** Strict enforcement of approval chains; skipping steps is impossible.
+- **Scalability:** System handles concurrent submissions and scans without degradation.
+- **Usability:** Security personnel can complete a gate scan in under 5 seconds with zero training.
+- **Maintainability:** Fully configurable rules via UI.
 
-## Non-Functional Requirements
+## 🗄️ Database Schema Entities
+- **USERS:** Stores all system actors.
+- **STUDENTS:** Extends USERS, linked to a hostel block and parent contact details.
+- **Hostel Block:** Manages blocks and respective authorities.
+- **PASSES:** Central table for Gate Pass descriptions, status, and types.
+- **Pass_Actions:** Audit log for every action on a pass.
+- **Blocked:** Records blocking events, roles, and timestamps.
 
-- Fast QR scan response (< 2 seconds)
-- Secure and tamper-proof QR codes
-- Reliable approval workflow
-- Supports concurrent users
-- Easy-to-use interface for security staff
+*(ER Diagram & Use Case diagrams are available in the project repository: `er.png`, `usecase.png`)*
 
----
-## Database Entities
-
-### USERS
-Stores all system actors including:
-- Students
-- Parents
-- Caretakers
-- Wardens
-- Chief Wardens
-- Security Personnel
-
-Contains authentication and role information.
-
-### STUDENTS
-Extends the USERS entity and stores:
-- Roll Number
-- Hostel Block Details
-- Parent Information
-- Defaulter Attempts
-
-Each student is linked to a hostel block.
-
-### HOSTEL_BLOCK
-Stores hostel block information along with assigned authorities such as:
-- Caretaker
-- Warden
-
-Used for managing block-wise student access and approvals.
-
-### PASSES
-Central table that stores gatepass information including:
-- Pass Type (Day Pass / Home Pass)
-- Destination
-- Purpose
-- Transport Mode
-- Pass Status
-- Expected Return Time
-- Actual Return Time
-- QR Code Details
-
-### PASS_ACTIONS
-Maintains audit logs for every action performed on a pass such as:
-- Submission
-- Approval
-- Rejection
-- Withdrawal
-- Outscan
-- Inscan
-
-Stores actor ID, action type, timestamp, and remarks.
-
-### BLOCKED
-Stores student blocking records including:
-- Blocking Reason
-- Blocking Role
-- Blocked Timestamp
-- Unblocked Timestamp
-Used to manage disciplinary restrictions and defaulter limits.
----
-
-
-## UI / Figma Designs
-
-Figma Design Link:
-https://www.figma.com/design/qaRD994mBFCMEE7lZrisFc/Gatepass-UI
-
+## 🎨 UI / Figma Designs
+High-fidelity designs and wireframes are produced in Figma:  
+[View Figma Designs](https://www.figma.com/design/qaRD994mBFCMEE7lZrisFc/Gatepass-UI?node-id=15-2&t=DvaAYjbkghvHwCO0-1)

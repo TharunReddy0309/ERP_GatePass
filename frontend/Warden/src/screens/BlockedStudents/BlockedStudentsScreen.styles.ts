@@ -45,30 +45,43 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
   },
   reasonBand: {
-    minHeight: 44,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: "rgba(242, 244, 246, 0.3)",
+    flexDirection: "row",
   },
-  reason: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
+  badgeLateArrival: {
+    backgroundColor: "#FFF3CD",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignSelf: "flex-start",
+  },
+  badgeMiscan: {
+    backgroundColor: "#FFDAD6",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignSelf: "flex-start",
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textStrong,
   },
   cardBody: {
     padding: 16,
     gap: 12,
   },
-  remarksInput: {
-    minHeight: 38,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "rgba(196, 198, 207, 0.5)",
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 9,
-    color: COLORS.text,
-    fontSize: 14,
-    lineHeight: 20,
+  proofThumbContainer: {
+    alignSelf: "flex-start",
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  proofThumb: {
+    width: 60,
+    height: 80,
+    borderRadius: 6,
   },
   unblockButton: {
     minHeight: 36,
@@ -97,5 +110,29 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.92)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalImage: {
+    width: "90%",
+    height: "70%",
+    borderRadius: 10,
+  },
+  modalCloseButton: {
+    marginTop: 24,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 6,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+  },
+  modalCloseText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
 });
-

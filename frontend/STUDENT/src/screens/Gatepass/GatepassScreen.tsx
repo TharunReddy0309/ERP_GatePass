@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -223,18 +223,29 @@ export default function GatepassScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    Promise.all([
-      getMyPassesApi(),
-      api.get("/student/getMe").then(res => res.data).catch(() => null)
-    ])
-      .then(([allPasses, userProfile]) => {
-        setPasses(allPasses.filter((p) => p.Status !== "CANCELLED"));
-        setProfile(userProfile);
-      })
-      .catch((e: any) => setError(e?.response?.data?.message || "Failed to load passes"))
-      .finally(() => setLoading(false));
+  const loadData = useCallback(async (attempt = 0) => {
+    try {
+      const [allPasses, userProfile] = await Promise.all([
+        getMyPassesApi(),
+        api.get("/student/getMe").then(res => res.data).catch(() => null),
+      ]);
+      setPasses(allPasses.filter((p) => p.Status !== "CANCELLED"));
+      setProfile(userProfile);
+      setError(null);
+    } catch (e: any) {
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+        return loadData(attempt + 1);
+      }
+      setError(e?.response?.data?.message || "Failed to load passes");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   return (
     <GatepassLayout activeTab="passes" heroSource={campusImage} heroHeight={192} heroOverlap={0} heroTone="light">
@@ -244,8 +255,14 @@ export default function GatepassScreen() {
           <Text style={{ color: "#74777F", marginTop: 12 }}>Loading passes...</Text>
         </View>
       ) : error ? (
-        <View style={{ alignItems: "center", paddingTop: 60 }}>
+        <View style={{ alignItems: "center", paddingTop: 60, gap: 12 }}>
           <Text style={{ color: "#FF8A80", fontSize: 14 }}>{error}</Text>
+          <Pressable
+            onPress={() => { setLoading(true); setError(null); loadData(); }}
+            style={{ marginTop: 8, paddingVertical: 10, paddingHorizontal: 24, backgroundColor: "#1D2D44", borderRadius: 8 }}
+          >
+            <Text style={{ color: "#708AB5", fontWeight: "700" }}>Retry</Text>
+          </Pressable>
         </View>
       ) : passes.length === 0 ? (
         <View style={{ alignItems: "center", paddingTop: 60, gap: 12 }}>

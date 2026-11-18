@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type Href, useRouter } from "expo-router";
 
 import { styles } from "./BottomNav.styles";
@@ -43,9 +44,10 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab }: BottomNavProps) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 8) }]}>
       {NAV_ITEMS.map((item) => {
         const active = item.key === activeTab;
         return (
@@ -70,4 +72,3 @@ export default function BottomNav({ activeTab }: BottomNavProps) {
     </View>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Req } from '@nestjs/common';
 import { BlockedService } from './blocked.service';
 import { CreateBlockedDto } from './dto/create-blocked.dto';
 import { UpdateBlockedDto } from './dto/update-blocked.dto';
@@ -16,14 +16,14 @@ export class BlockedController {
 
   @Put("unblockStudent/:rollNo")
   @Roles(UserRole.WARDEN)
-  unblockStudent(@Param('rollNo') rollNo: string, @Body() updateBlockedDto: UpdateBlockedDto) {
-    return this.blockedService.unblockStudent(rollNo,updateBlockedDto);
+  unblockStudent(@Param('rollNo') rollNo: string, @Body() updateBlockedDto: UpdateBlockedDto, @Req() req: any) {
+    return this.blockedService.unblockStudent(rollNo, updateBlockedDto, req.user.email);
   }
 
   @Post("blockStudent")
-  @Roles(UserRole.WARDEN,UserRole.SECURITY,UserRole.CARETAKER)
-  blockStudent(@Body() createBlockedDto: CreateBlockedDto) {
-    return this.blockedService.createBlocked(createBlockedDto);
+  @Roles(UserRole.WARDEN, UserRole.CARETAKER)
+  blockStudent(@Body() createBlockedDto: CreateBlockedDto, @Req() req: any) {
+    return this.blockedService.createBlocked(createBlockedDto, req.user.email);
   }
 
   @Get("getAllBlocked")

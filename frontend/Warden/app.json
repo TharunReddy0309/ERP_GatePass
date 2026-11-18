@@ -2,18 +2,25 @@
   "expo": {
     "name": "Warden",
     "slug": "warden",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "scheme": "warden",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "owner": "gatepassiiits",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rag.gatepass.warden"
     },
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "usesCleartextTraffic": true
+      "package": "com.rag.gatepass.warden",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      }
     },
     "web": {
       "output": "static"
@@ -23,6 +30,8 @@
       [
         "expo-splash-screen",
         {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 100,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
@@ -32,8 +41,19 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2e2be584-3375-4b19-9580-b73bbe17e870"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2e2be584-3375-4b19-9580-b73bbe17e870"
     }
   }
 }

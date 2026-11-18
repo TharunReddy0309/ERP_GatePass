@@ -1,9 +1,16 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-export const BASE_URL = "http://10.0.98.89:3000";
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
+
+let _logoutHandler: (() => void) | null = null;
+
+export function setLogoutHandler(fn: () => void) {
+  _logoutHandler = fn;
+}
 
 export const api = axios.create({
   baseURL: BASE_URL,
+  timeout: 20000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -36,6 +43,7 @@ api.interceptors.response.use(
         await SecureStore.deleteItemAsync("accessToken");
         await SecureStore.deleteItemAsync("refreshToken");
         await SecureStore.deleteItemAsync("userId");
+        _logoutHandler?.();
         return Promise.reject(error);
       }
     }

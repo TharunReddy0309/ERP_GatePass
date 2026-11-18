@@ -15,14 +15,14 @@ export class StudentController {
 
     @Post('/addStudent')
     @Roles(UserRole.CARETAKER,UserRole.WARDEN)
-    async addStudent(@Body() body:AddStudentDto){
-        return this.studentservice.addStudent(body) ;
+    async addStudent(@Body() body:AddStudentDto, @Req() req:any){
+        return this.studentservice.addStudent(body, req.user.email) ;
     }
 
     @Delete('/deleteStudent/:rollno')
     @Roles(UserRole.CARETAKER,UserRole.WARDEN)
-    async deleteStudent(@Param('rollno') RollNo:string){
-        return this.studentservice.deleteStudent(RollNo) ;
+    async deleteStudent(@Param('rollno') RollNo:string, @Req() req:any){
+        return this.studentservice.deleteStudent(RollNo, req.user.email) ;
     }
 
     @Put('/updateStudent')
@@ -39,8 +39,8 @@ export class StudentController {
 
     @Get('/getbyHostel/:hostelid')
     @Roles(UserRole.CARETAKER,UserRole.WARDEN)
-    async getbyHostel(@Param('hostelid') HostelID:string){
-        return this.studentservice.getByHostel(HostelID) ;
+    async getbyHostel(@Param('hostelid') HostelID:string, @Req() req:any){
+        return this.studentservice.getByHostel(HostelID, req.user.email) ;
     }
 
     @Get('/getMe')
